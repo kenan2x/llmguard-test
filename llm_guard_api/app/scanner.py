@@ -7,7 +7,7 @@ import torch
 from opentelemetry import metrics
 
 from llm_guard import input_scanners, output_scanners
-from llm_guard.input_scanners.anonymize_helpers import DEBERTA_AI4PRIVACY_v2_CONF
+from llm_guard.input_scanners.anonymize_helpers import BERT_TURKISH_NER_CONF, DEBERTA_AI4PRIVACY_v2_CONF
 from llm_guard.input_scanners.ban_code import MODEL_SM as BAN_CODE_MODEL
 from llm_guard.input_scanners.ban_competitors import MODEL_V1 as BAN_COMPETITORS_MODEL
 from llm_guard.input_scanners.ban_topics import MODEL_DEBERTA_BASE_V2 as BAN_TOPICS_MODEL
@@ -130,8 +130,13 @@ def _get_input_scanner(
         scanner_config["use_onnx"] = True
 
     if scanner_name == "Anonymize":
-        _configure_model(DEBERTA_AI4PRIVACY_v2_CONF["DEFAULT_MODEL"], scanner_config)
-        scanner_config["recognizer_conf"] = DEBERTA_AI4PRIVACY_v2_CONF
+        language = scanner_config.get("language", "en")
+        if language == "tr":
+            _configure_model(BERT_TURKISH_NER_CONF["DEFAULT_MODEL"], scanner_config)
+            scanner_config["recognizer_conf"] = BERT_TURKISH_NER_CONF
+        else:
+            _configure_model(DEBERTA_AI4PRIVACY_v2_CONF["DEFAULT_MODEL"], scanner_config)
+            scanner_config["recognizer_conf"] = DEBERTA_AI4PRIVACY_v2_CONF
 
     if scanner_name == "BanCode":
         _configure_model(BAN_CODE_MODEL, scanner_config)
