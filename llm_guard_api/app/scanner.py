@@ -134,6 +134,7 @@ def _get_input_scanner(
         if language == "tr":
             _configure_model(BERT_TURKISH_NER_CONF["DEFAULT_MODEL"], scanner_config)
             scanner_config["recognizer_conf"] = BERT_TURKISH_NER_CONF
+            scanner_config["use_onnx"] = False  # No ONNX version for Turkish BERT model
         else:
             _configure_model(DEBERTA_AI4PRIVACY_v2_CONF["DEFAULT_MODEL"], scanner_config)
             scanner_config["recognizer_conf"] = DEBERTA_AI4PRIVACY_v2_CONF
