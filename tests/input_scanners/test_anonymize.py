@@ -11,6 +11,7 @@ from llm_guard.input_scanners.anonymize import (
 from llm_guard.input_scanners.anonymize_helpers import (
     BERT_BASE_NER_CONF,
     BERT_LARGE_NER_CONF,
+    BERT_TURKISH_NER_CONF,
     BERT_ZH_NER_CONF,
     DEBERTA_LAKSHYAKH93_CONF,
     DEBERTA_AI4PRIVACY_v2_CONF,
@@ -393,3 +394,46 @@ def test_placeholder_consistency():
     assert mary_placeholder in result4
     assert email_placeholder in result1
     assert email_placeholder in result3
+
+
+@pytest.mark.parametrize(
+    "settings,prompt,expected_valid",
+    [
+        (
+            {"recognizer_conf": BERT_TURKISH_NER_CONF},
+            "Sadece basit bir cumle",
+            True,
+        ),
+        (
+            {
+                "entity_types": [
+                    "PERSON",
+                    "LOCATION",
+                    "ORGANIZATION",
+                    "EMAIL_ADDRESS_RE",
+                    "TURKISH_PHONE",
+                    "IBAN_TR",
+                    "TC_KIMLIK",
+                    "CREDIT_CARD_RE",
+                ],
+                "recognizer_conf": BERT_TURKISH_NER_CONF,
+            },
+            "Merhaba, benim adim Ahmet Yilmaz. Istanbul'da yasiyorum. "
+            "E-posta adresim ahmet@firma.com.tr ve telefon numaram 0532 123 45 67. "
+            "TC Kimlik numaram 12345678901. "
+            "IBAN numaram TR330006100519786457841326.",
+            False,
+        ),
+        (
+            {"recognizer_conf": BERT_TURKISH_NER_CONF},
+            "",
+            True,
+        ),
+    ],
+)
+def test_scan_tr(settings, prompt, expected_valid):
+    scanner = Anonymize(Vault(), language="tr", **settings)
+    sanitized_prompt, valid, score = scanner.scan(prompt)
+    assert valid == expected_valid
+    if not expected_valid:
+        assert sanitized_prompt != prompt

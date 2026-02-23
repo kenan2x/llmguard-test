@@ -40,7 +40,7 @@ DEFAULT_ENTITY_TYPES: Final[list[str]] = [
     "US_SSN_RE",
 ]
 
-ALL_SUPPORTED_LANGUAGES: Final[list[str]] = ["en", "zh"]
+ALL_SUPPORTED_LANGUAGES: Final[list[str]] = ["en", "zh", "tr"]
 
 
 class Anonymize(Scanner):
