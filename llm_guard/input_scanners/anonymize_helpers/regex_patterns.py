@@ -202,6 +202,64 @@ DEFAULT_REGEX_PATTERNS: list[DefaultRegexPatterns | RegexPatternsReuse] = [
         "score": 0.75,
         "languages": ["en"],
     },
+    {
+        "expressions": [r"\b[1-9]\d{10}\b"],
+        "name": "TC_KIMLIK",
+        "examples": ["12345678901", "98765432109"],
+        "context": ["TC", "Kimlik", "kimlik no", "vatandaslik", "T.C."],
+        "score": 0.6,
+        "languages": ["tr"],
+    },
+    {
+        "expressions": [
+            r"(?:\+90|0090)\s*\(?0?\d{3}\)?\s*\d{3}[\s-]?\d{2}[\s-]?\d{2}",
+            r"\b0\s*5\d{2}\s*\d{3}[\s-]?\d{2}[\s-]?\d{2}\b",
+        ],
+        "name": "TURKISH_PHONE",
+        "examples": ["+90 532 123 45 67", "0532 123 45 67", "05321234567"],
+        "context": ["telefon", "tel", "cep", "gsm", "mobil", "numara"],
+        "score": 0.85,
+        "languages": ["tr"],
+    },
+    {
+        "expressions": [r"\bTR\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{2}\b"],
+        "name": "IBAN_TR",
+        "examples": ["TR330006100519786457841326"],
+        "context": ["IBAN", "hesap", "banka", "hesap numarasi"],
+        "score": 0.9,
+        "languages": ["tr"],
+    },
+    {
+        "expressions": [r"\b\d{10}\b"],
+        "name": "TAX_NUMBER_TR",
+        "examples": ["1234567890"],
+        "context": ["vergi", "VKN", "vergi kimlik", "vergi no", "vergi numarasi"],
+        "score": 0.6,
+        "languages": ["tr"],
+    },
+    {
+        "name": "CREDIT_CARD",
+        "reuse": {"language": "en", "name": "CREDIT_CARD"},
+        "languages": ["tr"],
+    },
+    {
+        "expressions": [r"\b[A-Za-z0-9._%+-]+(\[AT\]|@)[A-Za-z0-9.-]+(\[DOT\]|\.)[A-Za-z]{2,}\b"],
+        "name": "EMAIL_ADDRESS_RE",
+        "examples": ["ahmet@firma.com.tr", "test@test.com"],
+        "context": ["email", "e-posta", "eposta", "mail"],
+        "score": 0.75,
+        "languages": ["tr"],
+    },
+    {
+        "name": "CREDIT_CARD_RE",
+        "reuse": {"language": "en", "name": "CREDIT_CARD_RE"},
+        "languages": ["tr"],
+    },
+    {
+        "name": "UUID",
+        "reuse": {"language": "en", "name": "UUID"},
+        "languages": ["tr"],
+    },
 ]
 
 
