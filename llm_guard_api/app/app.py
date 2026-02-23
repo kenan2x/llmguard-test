@@ -83,6 +83,12 @@ def create_app() -> FastAPI:
 
     register_routes(app, config, input_scanners_func, output_scanners_func)
 
+    from fastapi.staticfiles import StaticFiles
+
+    web_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "web")
+    if os.path.isdir(web_dir):
+        app.mount("/web", StaticFiles(directory=web_dir, html=True), name="web")
+
     instrument_app(app)
 
     return app
