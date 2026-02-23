@@ -360,3 +360,29 @@ DEBERTA_LAKSHYAKH93_CONF: NERConfig = {
     "ID_SCORE_MULTIPLIER": 0.4,
     "ID_ENTITY_NAME": "ID",
 }
+
+BERT_TURKISH_NER_CONF: NERConfig = {
+    "PRESIDIO_SUPPORTED_ENTITIES": [
+        "LOCATION",
+        "PERSON",
+        "ORGANIZATION",
+    ],
+    "DEFAULT_MODEL": Model(
+        path="savasy/bert-base-turkish-ner-cased",
+        pipeline_kwargs={
+            "aggregation_strategy": "simple",
+        },
+        tokenizer_kwargs={"model_input_names": ["input_ids", "attention_mask"]},
+    ),
+    "LABELS_TO_IGNORE": ["O"],
+    "DEFAULT_EXPLANATION": "Identified as {} by the savasy/bert-base-turkish-ner-cased NER model",
+    "MODEL_TO_PRESIDIO_MAPPING": {
+        "PER": "PERSON",
+        "LOC": "LOCATION",
+        "ORG": "ORGANIZATION",
+    },
+    "CHUNK_OVERLAP_SIZE": 40,
+    "CHUNK_SIZE": 600,
+    "ID_SCORE_MULTIPLIER": 0.4,
+    "ID_ENTITY_NAME": "ID",
+}
