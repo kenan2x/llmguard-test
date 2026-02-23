@@ -6,6 +6,9 @@ from pydantic import BaseModel, Field
 class ScanPromptRequest(BaseModel):
     prompt: str = Field(title="Prompt")
     scanners_suppress: List[str] = Field(title="Scanners to suppress", default=[])
+    entity_types_suppress: List[str] = Field(
+        title="Entity types to suppress from Anonymize scanner", default=[]
+    )
 
 
 class ScanPromptResponse(BaseModel):

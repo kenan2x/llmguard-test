@@ -14,5 +14,6 @@ __all__ = [
     "BERT_LARGE_NER_CONF",
     "DEBERTA_LAKSHYAKH93_CONF",
     "BERT_TURKISH_NER_CONF",
+    "MDEBERTA_AI4PRIVACY_v2_CONF",
     "get_regex_patterns",
 ]

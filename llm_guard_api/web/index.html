@@ -170,6 +170,174 @@
             gap: 0.5rem;
         }
 
+        /* Entity Settings Collapsible */
+        .entity-settings {
+            margin-top: 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .entity-settings:hover {
+            border-color: #d1d5db;
+        }
+
+        .entity-settings-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            background: #f8fafc;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            transition: background 0.15s;
+        }
+
+        .entity-settings-toggle:hover {
+            background: #f1f5f9;
+        }
+
+        .entity-settings-toggle .toggle-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .entity-settings-toggle .toggle-count {
+            font-weight: 400;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .entity-settings-toggle .chevron {
+            width: 16px;
+            height: 16px;
+            color: #94a3b8;
+            transition: transform 0.25s ease;
+        }
+
+        .entity-settings.open .chevron {
+            transform: rotate(180deg);
+        }
+
+        .entity-settings-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .entity-settings.open .entity-settings-body {
+            max-height: 600px;
+        }
+
+        .entity-settings-inner {
+            padding: 0.75rem 0.875rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .entity-group-label {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.375rem;
+            margin-top: 0.625rem;
+        }
+
+        .entity-group-label:first-child {
+            margin-top: 0;
+        }
+
+        .entity-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+        }
+
+        .entity-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.625rem;
+            border-radius: 100px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.15s ease;
+            user-select: none;
+            color: #fff;
+            letter-spacing: 0.01em;
+        }
+
+        .entity-chip .chip-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            flex-shrink: 0;
+        }
+
+        .entity-chip.active {
+            opacity: 1;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+
+        .entity-chip.active:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .entity-chip.inactive {
+            background: #e5e7eb !important;
+            color: #9ca3af;
+            border-color: #d1d5db;
+        }
+
+        .entity-chip.inactive .chip-dot {
+            background: #c0c4cc;
+        }
+
+        .entity-chip.inactive:hover {
+            background: #d1d5db !important;
+            color: #6b7280;
+        }
+
+        .entity-select-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.625rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .entity-select-actions button {
+            font-family: inherit;
+            font-size: 0.6875rem;
+            font-weight: 500;
+            color: #3b82f6;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: color 0.15s;
+        }
+
+        .entity-select-actions button:hover {
+            color: #1d4ed8;
+        }
+
         .spinner {
             display: inline-block;
             width: 1rem;
@@ -383,9 +551,39 @@
 
             <textarea
                 id="inputText"
-                rows="15"
+                rows="12"
                 placeholder="Maskelemek istediginiz Turkce metni buraya yazin veya asagidaki orneklerden birini secin..."
             ></textarea>
+
+            <!-- Entity Settings -->
+            <div class="entity-settings" id="entitySettings">
+                <button class="entity-settings-toggle" onclick="toggleEntitySettings()">
+                    <span class="toggle-left">
+                        Entity Ayarlari
+                        <span class="toggle-count" id="entityCount"></span>
+                    </span>
+                    <svg class="chevron" viewBox="0 0 16 16" fill="none">
+                        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div class="entity-settings-body">
+                    <div class="entity-settings-inner">
+                        <div class="entity-group-label">NER Modelleri (BERT + mDeBERTa)</div>
+                        <div class="entity-chips" id="nerChips"></div>
+
+                        <div class="entity-group-label">Regex Desenleri</div>
+                        <div class="entity-chips" id="regexChips"></div>
+
+                        <div class="entity-group-label">mDeBERTa Ek Tipler</div>
+                        <div class="entity-chips" id="mdebertaChips"></div>
+
+                        <div class="entity-select-actions">
+                            <button onclick="setAllEntities(true)">Tumunu Sec</button>
+                            <button onclick="setAllEntities(false)">Tumunu Kaldir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <button class="btn btn-primary" id="maskBtn" onclick="handleMask()">
                 Maskele
@@ -397,6 +595,7 @@
                     <button class="btn btn-outline" onclick="loadExample(1)">Ornek 1: Kisisel Bilgiler</button>
                     <button class="btn btn-outline" onclick="loadExample(2)">Ornek 2: Musteri Hizmeti</button>
                     <button class="btn btn-outline" onclick="loadExample(3)">Ornek 3: Sirket Toplantisi</button>
+                    <button class="btn btn-outline" onclick="loadExample(4)">Ornek 4: Baglanti + Secret</button>
                 </div>
             </div>
 
@@ -420,18 +619,7 @@
             <!-- Legend -->
             <div class="legend" id="legendSection">
                 <div class="legend-title">Entity Turleri</div>
-                <div class="legend-grid">
-                    <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>Person</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#22c55e"></span>Location</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#a855f7"></span>Organization</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>TC Kimlik</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#f97316"></span>Turkish Phone</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#eab308"></span>IBAN TR</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#06b6d4"></span>Email</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#ec4899"></span>Credit Card</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#6366f1"></span>IP Address</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#14b8a6"></span>Tax Number TR</div>
-                </div>
+                <div class="legend-grid" id="legendGrid"></div>
             </div>
 
             <!-- Scanner Results Table -->
@@ -439,7 +627,7 @@
                 <table class="scanner-table">
                     <thead>
                         <tr>
-                            <th>Entity Tipi</th>
+                            <th>Tarayici</th>
                             <th>Skor</th>
                         </tr>
                     </thead>
@@ -454,23 +642,140 @@
         const EXAMPLES = {
             1: "Merhaba, ben Ahmet Yilmaz. Istanbul Kadikoy'de yasiyorum. TC Kimlik numaram 12345678901. Bana 0532 123 45 67 numarasindan ulasabilirsiniz. E-posta: ahmet.yilmaz@firma.com.tr IBAN: TR330006100519786457841326",
             2: "Turk Telekom AS musteri hizmetlerini aradigimda, temsilci Fatma Kaya beni bilgilendirdi. Vergi kimlik numaram 9876543210. Kredi kart numaram 4567-8901-2345-6789.",
-            3: "Proje muduru Mehmet Ozturk, Ankara Cankaya'daki ofisten toplanti organize etti. IP adresim 192.168.1.50. Sirket IBAN'i TR120001200123400000000015."
+            3: "Proje muduru Mehmet Ozturk, Ankara Cankaya'daki ofisten toplanti organize etti. IP adresim 192.168.1.50. Sirket IBAN'i TR120001200123400000000015.",
+            4: "Veritabani baglantisi: postgresql://admin:SecretPass99@10.200.5.150:5432/verimon_db\nAPI anahtari: sk-proj-abc123def456ghi789 \nMustafa Demir 15 Mart 2024 tarihinde https://portal.sirket.com.tr adresinden erisim sagladi."
         };
 
-        const ENTITY_COLORS = {
-            'PERSON': '#3b82f6',
-            'LOCATION': '#22c55e',
-            'ORGANIZATION': '#a855f7',
-            'TC_KIMLIK': '#ef4444',
-            'TURKISH_PHONE': '#f97316',
-            'IBAN_TR': '#eab308',
-            'EMAIL_ADDRESS': '#06b6d4',
-            'CREDIT_CARD': '#ec4899',
-            'IP_ADDRESS': '#6366f1',
-            'TAX_NUMBER_TR': '#14b8a6'
+        // All entity types with display info, grouped
+        const ENTITY_DEFS = {
+            // NER models (BERT + mDeBERTa shared)
+            ner: [
+                { id: 'PERSON', label: 'Person', color: '#3b82f6' },
+                { id: 'LOCATION', label: 'Location', color: '#22c55e' },
+                { id: 'ORGANIZATION', label: 'Organization', color: '#a855f7' },
+            ],
+            // Regex patterns
+            regex: [
+                { id: 'EMAIL_ADDRESS_RE', label: 'Email (Regex)', color: '#06b6d4' },
+                { id: 'TURKISH_PHONE', label: 'Telefon TR', color: '#f97316' },
+                { id: 'IBAN_TR', label: 'IBAN TR', color: '#eab308' },
+                { id: 'TC_KIMLIK', label: 'TC Kimlik', color: '#ef4444' },
+                { id: 'TAX_NUMBER_TR', label: 'Vergi No', color: '#14b8a6' },
+                { id: 'CREDIT_CARD_RE', label: 'Kredi Kart (Regex)', color: '#ec4899' },
+                { id: 'IP_ADDRESS', label: 'IP Adresi', color: '#6366f1' },
+                { id: 'UUID', label: 'UUID', color: '#8b5cf6' },
+            ],
+            // mDeBERTa additional types
+            mdeberta: [
+                { id: 'URL', label: 'URL', color: '#0ea5e9' },
+                { id: 'DATE_TIME', label: 'Tarih/Saat', color: '#d946ef' },
+                { id: 'PHONE_NUMBER', label: 'Telefon (ML)', color: '#f59e0b' },
+                { id: 'CREDIT_CARD', label: 'Kredi Kart (ML)', color: '#e11d48' },
+                { id: 'IBAN_CODE', label: 'IBAN (ML)', color: '#ca8a04' },
+                { id: 'CRYPTO', label: 'Kripto Adres', color: '#7c3aed' },
+                { id: 'EMAIL_ADDRESS', label: 'Email (ML)', color: '#0891b2' },
+            ]
         };
+
+        // Build flat color map for highlighting
+        const ENTITY_COLORS = {};
+        Object.values(ENTITY_DEFS).flat().forEach(function(e) {
+            ENTITY_COLORS[e.id] = e.color;
+        });
+        // Secrets scanner gets its own color
+        ENTITY_COLORS['SECRET'] = '#b91c1c';
 
         const DEFAULT_COLOR = '#6b7280';
+
+        // Entity active state
+        const entityActive = {};
+        Object.values(ENTITY_DEFS).flat().forEach(function(e) {
+            entityActive[e.id] = true;
+        });
+
+        function buildChips(containerId, entities) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            entities.forEach(function(e) {
+                const chip = document.createElement('span');
+                chip.className = 'entity-chip active';
+                chip.dataset.entityId = e.id;
+                chip.style.background = e.color;
+                chip.innerHTML = '<span class="chip-dot"></span>' + e.label;
+                chip.onclick = function() { toggleEntity(e.id, chip); };
+                container.appendChild(chip);
+            });
+        }
+
+        function toggleEntity(id, chip) {
+            entityActive[id] = !entityActive[id];
+            if (entityActive[id]) {
+                const def = Object.values(ENTITY_DEFS).flat().find(function(e) { return e.id === id; });
+                chip.className = 'entity-chip active';
+                chip.style.background = def ? def.color : DEFAULT_COLOR;
+            } else {
+                chip.className = 'entity-chip inactive';
+                chip.style.background = '';
+            }
+            updateEntityCount();
+        }
+
+        function setAllEntities(active) {
+            Object.keys(entityActive).forEach(function(id) { entityActive[id] = active; });
+            document.querySelectorAll('.entity-chip').forEach(function(chip) {
+                var id = chip.dataset.entityId;
+                var def = Object.values(ENTITY_DEFS).flat().find(function(e) { return e.id === id; });
+                if (active) {
+                    chip.className = 'entity-chip active';
+                    chip.style.background = def ? def.color : DEFAULT_COLOR;
+                } else {
+                    chip.className = 'entity-chip inactive';
+                    chip.style.background = '';
+                }
+            });
+            updateEntityCount();
+        }
+
+        function updateEntityCount() {
+            var total = Object.keys(entityActive).length;
+            var active = Object.values(entityActive).filter(Boolean).length;
+            document.getElementById('entityCount').textContent = active + '/' + total + ' aktif';
+        }
+
+        function getSuppressedEntities() {
+            var suppressed = [];
+            Object.entries(entityActive).forEach(function([id, active]) {
+                if (!active) suppressed.push(id);
+            });
+            return suppressed;
+        }
+
+        function toggleEntitySettings() {
+            document.getElementById('entitySettings').classList.toggle('open');
+        }
+
+        function buildLegend() {
+            var grid = document.getElementById('legendGrid');
+            grid.innerHTML = '';
+            Object.values(ENTITY_DEFS).flat().forEach(function(e) {
+                var item = document.createElement('div');
+                item.className = 'legend-item';
+                item.innerHTML = '<span class="legend-dot" style="background:' + e.color + '"></span>' + e.label;
+                grid.appendChild(item);
+            });
+            // Add Secrets indicator
+            var secretItem = document.createElement('div');
+            secretItem.className = 'legend-item';
+            secretItem.innerHTML = '<span class="legend-dot" style="background:#b91c1c"></span>Secrets';
+            grid.appendChild(secretItem);
+        }
+
+        // Initialize
+        buildChips('nerChips', ENTITY_DEFS.ner);
+        buildChips('regexChips', ENTITY_DEFS.regex);
+        buildChips('mdebertaChips', ENTITY_DEFS.mdeberta);
+        updateEntityCount();
+        buildLegend();
 
         function loadExample(num) {
             document.getElementById('inputText').value = EXAMPLES[num];
@@ -486,11 +791,12 @@
         }
 
         function highlightEntities(text) {
-            // Match patterns like [REDACTED_XXX_N]
-            return text.replace(/\[REDACTED_([A-Z_]+?)_(\d+)\]/g, function(match, entityType, num) {
-                const color = getEntityColor(entityType);
+            // Match patterns like [REDACTED_XXX_N] and also ****** for secrets
+            var result = text.replace(/\[REDACTED_([A-Z_]+?)_(\d+)\]/g, function(match, entityType, num) {
+                var color = getEntityColor(entityType);
                 return '<span class="entity-tag" style="background:' + color + '">' + escapeHtml(match) + '</span>';
             });
+            return result;
         }
 
         function escapeHtml(str) {
@@ -592,12 +898,18 @@
             setLoading(true);
 
             try {
+                var body = { prompt: text };
+                var suppressed = getSuppressedEntities();
+                if (suppressed.length > 0) {
+                    body.entity_types_suppress = suppressed;
+                }
+
                 const response = await fetch('/analyze/prompt', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ prompt: text })
+                    body: JSON.stringify(body)
                 });
 
                 if (!response.ok) {

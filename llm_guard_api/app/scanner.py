@@ -7,7 +7,12 @@ import torch
 from opentelemetry import metrics
 
 from llm_guard import input_scanners, output_scanners
-from llm_guard.input_scanners.anonymize_helpers import BERT_TURKISH_NER_CONF, DEBERTA_AI4PRIVACY_v2_CONF
+from llm_guard.input_scanners.anonymize_helpers import (
+    BERT_TURKISH_NER_CONF,
+    DEBERTA_AI4PRIVACY_v2_CONF,
+    MDEBERTA_AI4PRIVACY_v2_CONF,
+    get_transformers_recognizer,
+)
 from llm_guard.input_scanners.ban_code import MODEL_SM as BAN_CODE_MODEL
 from llm_guard.input_scanners.ban_competitors import MODEL_V1 as BAN_COMPETITORS_MODEL
 from llm_guard.input_scanners.ban_topics import MODEL_DEBERTA_BASE_V2 as BAN_TOPICS_MODEL
@@ -179,7 +184,22 @@ def _get_input_scanner(
         _configure_model(EMOTION_DETECTION_MODEL, scanner_config)
         scanner_config["model"] = EMOTION_DETECTION_MODEL
 
-    return input_scanners.get_scanner_by_name(scanner_name, scanner_config)
+    # Remember language before it gets consumed by scanner constructor
+    anonymize_language = scanner_config.get("language", "en") if scanner_name == "Anonymize" else None
+
+    scanner = input_scanners.get_scanner_by_name(scanner_name, scanner_config)
+
+    # Inject mDeBERTa as secondary recognizer for Turkish Anonymize
+    if scanner_name == "Anonymize" and anonymize_language == "tr":
+        LOGGER.debug("Injecting mDeBERTa AI4Privacy as secondary recognizer for Turkish")
+        mdeberta_recognizer = get_transformers_recognizer(
+            recognizer_conf=MDEBERTA_AI4PRIVACY_v2_CONF,
+            use_onnx=True,
+            supported_language="tr",
+        )
+        scanner._analyzer.registry.add_recognizer(mdeberta_recognizer)
+
+    return scanner
 
 
 def _get_output_scanner(

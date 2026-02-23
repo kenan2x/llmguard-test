@@ -24,6 +24,7 @@ from slowapi.util import get_remote_address
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from llm_guard import scan_output, scan_prompt
+from llm_guard.input_scanners.anonymize import Anonymize
 from llm_guard.input_scanners.base import Scanner as InputScanner
 from llm_guard.output_scanners.base import Scanner as OutputScanner
 from llm_guard.vault import Vault
@@ -361,43 +362,67 @@ def register_routes(
                 if type(scanner).__name__ not in request.scanners_suppress
             ]
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            loop = asyncio.get_event_loop()
-            try:
-                start_time = time.time()
-                sanitized_prompt, results_valid, results_score = await asyncio.wait_for(
-                    loop.run_in_executor(
-                        executor,
-                        scan_prompt,
-                        input_scanners,
-                        request.prompt,
-                        config.app.scan_fail_fast,
-                    ),
-                    timeout=config.app.scan_prompt_timeout,
-                )
+        # Entity type suppression for Anonymize scanner
+        anonymize_scanner = None
+        original_entity_types = None
+        if request.entity_types_suppress:
+            for scanner in input_scanners:
+                if isinstance(scanner, Anonymize):
+                    anonymize_scanner = scanner
+                    original_entity_types = list(scanner._entity_types)
+                    scanner._entity_types = [
+                        et for et in scanner._entity_types
+                        if et not in request.entity_types_suppress
+                    ]
+                    LOGGER.debug(
+                        "Suppressing entity types",
+                        suppressed=request.entity_types_suppress,
+                        active=scanner._entity_types,
+                    )
+                    break
 
-                for scanner, valid in results_valid.items():
-                    scanners_valid_counter.add(
-                        1, {"source": "input", "valid": valid, "scanner": scanner}
+        try:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                loop = asyncio.get_event_loop()
+                try:
+                    start_time = time.time()
+                    sanitized_prompt, results_valid, results_score = await asyncio.wait_for(
+                        loop.run_in_executor(
+                            executor,
+                            scan_prompt,
+                            input_scanners,
+                            request.prompt,
+                            config.app.scan_fail_fast,
+                        ),
+                        timeout=config.app.scan_prompt_timeout,
                     )
 
-                response = AnalyzePromptResponse(
-                    sanitized_prompt=sanitized_prompt,
-                    is_valid=all(results_valid.values()),
-                    scanners=results_score,
-                )
+                    for scanner, valid in results_valid.items():
+                        scanners_valid_counter.add(
+                            1, {"source": "input", "valid": valid, "scanner": scanner}
+                        )
 
-                elapsed_time = time.time() - start_time
-                LOGGER.debug(
-                    "Sanitized prompt response returned",
-                    scores=results_score,
-                    elapsed_time_seconds=round(elapsed_time, 6),
-                )
-            except asyncio.TimeoutError:
-                raise HTTPException(
-                    status_code=status.HTTP_408_REQUEST_TIMEOUT,
-                    detail="Request timeout.",
-                )
+                    response = AnalyzePromptResponse(
+                        sanitized_prompt=sanitized_prompt,
+                        is_valid=all(results_valid.values()),
+                        scanners=results_score,
+                    )
+
+                    elapsed_time = time.time() - start_time
+                    LOGGER.debug(
+                        "Sanitized prompt response returned",
+                        scores=results_score,
+                        elapsed_time_seconds=round(elapsed_time, 6),
+                    )
+                except asyncio.TimeoutError:
+                    raise HTTPException(
+                        status_code=status.HTTP_408_REQUEST_TIMEOUT,
+                        detail="Request timeout.",
+                    )
+        finally:
+            # Restore original entity types
+            if anonymize_scanner is not None and original_entity_types is not None:
+                anonymize_scanner._entity_types = original_entity_types
 
         return response
 

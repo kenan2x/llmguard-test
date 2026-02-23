@@ -7,6 +7,9 @@ app:
   lazy_load: false
 
 input_scanners:
+  - type: Secrets
+    params:
+      redact_mode: all
   - type: Anonymize
     params:
       language: "tr"
@@ -22,6 +25,13 @@ input_scanners:
         - CREDIT_CARD_RE
         - IP_ADDRESS
         - UUID
+        - URL
+        - DATE_TIME
+        - PHONE_NUMBER
+        - CREDIT_CARD
+        - IBAN_CODE
+        - CRYPTO
+        - EMAIL_ADDRESS
       use_faker: false
       threshold: 0.4
 
