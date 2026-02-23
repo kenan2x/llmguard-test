@@ -93,14 +93,20 @@ def _add_recognizers(
     return registry
 
 
+_SPACY_MODEL_FALLBACK: dict[str, str] = {
+    "tr": "en_core_web_sm",  # No Turkish spaCy model; use English for tokenization
+}
+
+
 def _get_nlp_engine(languages: list[str]) -> NlpEngine:
     models = []
 
     for language in languages:
-        if not spacy.util.is_package(f"{language}_core_web_sm"):
+        model_name = _SPACY_MODEL_FALLBACK.get(language, f"{language}_core_web_sm")
+        if not spacy.util.is_package(model_name):
             # Use small spacy model, for faster inference.
-            download(f"{language}_core_web_sm")
-        models.append({"lang_code": language, "model_name": f"{language}_core_web_sm"})
+            download(model_name)
+        models.append({"lang_code": language, "model_name": model_name})
 
     configuration = {"nlp_engine_name": "spacy", "models": models}
 
