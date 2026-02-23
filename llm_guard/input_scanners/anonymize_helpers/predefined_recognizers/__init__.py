@@ -13,6 +13,12 @@ def _get_predefined_recognizers(language: str) -> list[Callable[..., EntityRecog
             EmailRecognizer,
             IpRecognizer,
         ]
+    elif language == "tr":
+        from .tr import PhoneRecognizer
+
+        return [
+            PhoneRecognizer,
+        ]
     else:
         return []
 
