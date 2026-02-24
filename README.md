@@ -10,6 +10,7 @@ Internet erişimi olmayan Linux x64 sunuculara deploy etmek icin hazirlanmis Doc
 - [Run (Offline Sunucu)](#run-offline-sunucu)
 - [Dogrulama](#dogrulama)
 - [Konfigürasyon](#konfigurasyon)
+- [Proxy Arkasinda Build](#proxy-arkasinda-build)
 - [Troubleshooting](#troubleshooting)
 
 ---
@@ -218,6 +219,117 @@ docker run -d \
 | DunnBC22/codebert-base-Malicious_URLs + ONNX | MaliciousURLs | ~500 MB |
 | ProtectAI/distilroberta-base-rejection-v1 | NoRefusal | ~500 MB |
 | BAAI/bge-small-en-v1.5 | Relevance | ~130 MB |
+
+---
+
+## Proxy Arkasinda Build
+
+Kurumsal aglarda internete proxy uzerinden cikiliyor olabilir. Bu durumda hem Docker daemon hem de build icindeki araclar (pip, spaCy, HuggingFace) proxy'den haberdar olmalidir.
+
+### 1. Docker daemon proxy ayari
+
+Docker daemon'un image layer'lari (FROM) cekebilmesi icin sistem seviyesinde proxy tanimlanmalidir.
+
+```bash
+# /etc/systemd/system/docker.service.d/http-proxy.conf olusturun
+sudo mkdir -p /etc/systemd/system/docker.service.d
+sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf <<EOF
+[Service]
+Environment="HTTP_PROXY=http://proxy.sirket.com:8080"
+Environment="HTTPS_PROXY=http://proxy.sirket.com:8080"
+Environment="NO_PROXY=localhost,127.0.0.1,.sirket.com"
+EOF
+
+# Docker daemon'u yeniden baslat
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
+### 2. Build sirasinda proxy (build-arg ile)
+
+Build icindeki `pip install`, `spacy download` ve `huggingface_hub` komutlari proxy'yi build-arg olarak alir:
+
+```bash
+docker build --platform linux/amd64 \
+  -f llm_guard_api/Dockerfile.offline \
+  --build-arg HTTP_PROXY=http://proxy.sirket.com:8080 \
+  --build-arg HTTPS_PROXY=http://proxy.sirket.com:8080 \
+  --build-arg NO_PROXY=localhost,127.0.0.1 \
+  -t llm-guard-api:offline \
+  .
+```
+
+> **Not:** `--build-arg` ile gecilen proxy degerleri otomatik olarak build ortamina `ENV` olarak enjekte edilir. pip, curl, wget, huggingface_hub ve spaCy hepsi `HTTP_PROXY`/`HTTPS_PROXY` ortam degiskenlerini tanir.
+
+> **Not:** Build-arg'lar sadece build sirasinda gecerlidir, olusturulan image icine yazilmaz. Runtime'da proxy olmayacaktir (zaten offline calisacak).
+
+### 3. SSL sertifika sorunu (self-signed proxy)
+
+Kurumsal proxy'ler genellikle kendi CA sertifikalarini kullanir. Bu durumda pip ve HuggingFace SSL hatasi verebilir.
+
+**Yontem A: CA sertifikayi build'e ekle (onerilen)**
+
+CA sertifika dosyanizi (`sirket-ca.crt`) repo kokune kopyalayin, ardindan `Dockerfile.offline` dosyasinin builder stage'ine su satirlari ekleyin (`RUN apt-get ...` satirindan hemen sonra):
+
+```dockerfile
+# Kurumsal CA sertifika (self-signed proxy icin)
+COPY sirket-ca.crt /usr/local/share/ca-certificates/sirket-ca.crt
+RUN update-ca-certificates
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+```
+
+**Yontem B: SSL dogrulamasini atla (guvenli degildir, sadece test icin)**
+
+```bash
+docker build --platform linux/amd64 \
+  -f llm_guard_api/Dockerfile.offline \
+  --build-arg HTTP_PROXY=http://proxy.sirket.com:8080 \
+  --build-arg HTTPS_PROXY=http://proxy.sirket.com:8080 \
+  --build-arg PIP_TRUSTED_HOST="pypi.org pypi.python.org files.pythonhosted.org" \
+  --build-arg HF_HUB_DISABLE_TELEMETRY=1 \
+  --build-arg CURL_CA_BUNDLE="" \
+  -t llm-guard-api:offline \
+  .
+```
+
+Eger HuggingFace indirmelerinde hala SSL hatasi aliyorsaniz, `download_models.py`'daki `snapshot_download()` cagrisina gecici olarak su parametreyi ekleyebilirsiniz (production icin onerilmez):
+
+```python
+import os
+os.environ["HF_HUB_DISABLE_IMPLICIT_TOKEN"] = "1"
+os.environ["CURL_CA_BUNDLE"] = ""
+
+# veya requests seviyesinde:
+import requests
+requests.packages.urllib3.disable_warnings()
+```
+
+### 4. Proxy gerektiren servislerin ozeti
+
+| Servis | Ne zaman | Hedef adresler |
+|--------|----------|---------------|
+| Docker pull | Base image cekerken | `registry-1.docker.io`, `production.cloudflare.docker.com` |
+| pip install | Python paketleri | `pypi.org`, `files.pythonhosted.org` |
+| spaCy download | spaCy modeli | `github.com` (release assets) |
+| HuggingFace | ML modelleri | `huggingface.co`, `cdn-lfs.huggingface.co`, `cdn-lfs-us-1.hf.co` |
+
+Proxy whitelist'ine bu adreslerin eklenmesi gerekir.
+
+### 5. Hizli kontrol
+
+Proxy'nin calistigini build oncesi dogrulamak icin:
+
+```bash
+# Docker daemon proxy testi
+docker pull python:3.12-slim
+
+# Build icinden proxy testi (interaktif)
+docker run --rm \
+  -e HTTP_PROXY=http://proxy.sirket.com:8080 \
+  -e HTTPS_PROXY=http://proxy.sirket.com:8080 \
+  python:3.12-slim \
+  pip install --dry-run requests
+```
 
 ---
 
