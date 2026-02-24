@@ -30,6 +30,8 @@ from llm_guard.output_scanners.base import Scanner as OutputScanner
 from llm_guard.vault import Vault
 
 from .config import AuthConfig, Config, get_config
+from .db import create_asset_store
+from .routes_assets import create_asset_routes
 from .otel import configure_otel, instrument_app
 from .scanner import (
     InputIsInvalid,
@@ -68,7 +70,14 @@ def create_app() -> FastAPI:
     configure_otel(config.app.name, config.tracing, config.metrics)
 
     vault = Vault()
-    input_scanners_func = _get_input_scanners_function(config, vault)
+
+    # Initialize asset store for DynamicLookup scanner
+    cached_asset_store = None
+    if config.dynamic_lookup:
+        LOGGER.info("Initializing dynamic lookup asset store")
+        cached_asset_store = create_asset_store(config.dynamic_lookup.model_dump())
+
+    input_scanners_func = _get_input_scanners_function(config, vault, cached_asset_store)
     output_scanners_func = _get_output_scanners_function(config, vault)
 
     if config.app.scan_fail_fast:
@@ -83,6 +92,10 @@ def create_app() -> FastAPI:
     )
 
     register_routes(app, config, input_scanners_func, output_scanners_func)
+
+    # Register asset management CRUD routes
+    if cached_asset_store:
+        app.include_router(create_asset_routes(cached_asset_store))
 
     from fastapi.staticfiles import StaticFiles
 
@@ -130,18 +143,20 @@ def _check_auth_function(auth_config: AuthConfig) -> callable:
     return check_auth
 
 
-def _get_input_scanners_function(config: Config, vault: Vault) -> Callable:
+def _get_input_scanners_function(
+    config: Config, vault: Vault, asset_store=None
+) -> Callable:
     scanners = []
     if not config.app.lazy_load:
         LOGGER.debug("Loading input scanners")
-        scanners = get_input_scanners(config.input_scanners, vault)
+        scanners = get_input_scanners(config.input_scanners, vault, asset_store=asset_store)
 
     def get_cached_scanners() -> List[InputScanner]:
         nonlocal scanners
 
         if not scanners and config.app.lazy_load:
             LOGGER.debug("Lazy loading input scanners")
-            scanners = get_input_scanners(config.input_scanners, vault)
+            scanners = get_input_scanners(config.input_scanners, vault, asset_store=asset_store)
 
         return scanners
 

@@ -260,6 +260,14 @@ DEFAULT_REGEX_PATTERNS: list[DefaultRegexPatterns | RegexPatternsReuse] = [
         "reuse": {"language": "en", "name": "UUID"},
         "languages": ["tr"],
     },
+    {
+        "expressions": [r"\b(?:[0-7][0-9]|8[01])\s?[A-Z]{1,3}\s?\d{2,4}\b"],
+        "name": "TR_LICENSE_PLATE",
+        "examples": ["34 ABC 1234", "06 A 1234", "35ABC123"],
+        "context": ["plaka", "arac", "tasit", "trafik"],
+        "score": 0.7,
+        "languages": ["tr"],
+    },
 ]
 
 

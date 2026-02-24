@@ -1,4 +1,5 @@
 import asyncio
+import re
 import time
 from typing import Dict, List, Optional
 
@@ -45,7 +46,9 @@ scanners_valid_counter = meter.create_counter(
 )
 
 
-def get_input_scanners(scanners: List[ScannerConfig], vault: Vault) -> List[InputScanner]:
+def get_input_scanners(
+    scanners: List[ScannerConfig], vault: Vault, asset_store=None
+) -> List[InputScanner]:
     """
     Load input scanners from the configuration file.
     """
@@ -58,6 +61,7 @@ def get_input_scanners(scanners: List[ScannerConfig], vault: Vault) -> List[Inpu
                 scanner.type,
                 scanner.params,
                 vault=vault,
+                asset_store=asset_store,
             )
         )
 
@@ -114,12 +118,17 @@ def _get_input_scanner(
     scanner_config: Optional[Dict],
     *,
     vault: Vault,
+    asset_store=None,
 ):
     if scanner_config is None:
         scanner_config = {}
 
     if scanner_name == "Anonymize":
         scanner_config["vault"] = vault
+
+    if scanner_name == "DynamicLookup":
+        scanner_config["vault"] = vault
+        scanner_config["asset_store"] = asset_store
 
     if scanner_name in [
         "Anonymize",
@@ -198,6 +207,39 @@ def _get_input_scanner(
             supported_language="tr",
         )
         scanner._analyzer.registry.add_recognizer(mdeberta_recognizer)
+
+    # Wrap Anonymize scanner to protect existing [REDACTED_*_N] placeholders from NER corruption
+    if scanner_name == "Anonymize":
+        _original_scan = scanner.scan
+
+        def _protected_scan(prompt: str):
+            # Find all existing redaction placeholders from upstream scanners (e.g. DynamicLookup)
+            placeholder_pattern = re.compile(r"\[REDACTED_[A-Z_]+_\d+\]")
+            existing_placeholders = placeholder_pattern.findall(prompt)
+
+            if not existing_placeholders:
+                return _original_scan(prompt)
+
+            # Replace placeholders with safe tokens that NER won't detect.
+            # Using "ve" (Turkish "and") padded with underscores - a common stopword
+            # that NER models are trained to ignore, plus underscores break word boundaries.
+            safe_map = {}
+            protected_prompt = prompt
+            for i, ph in enumerate(existing_placeholders):
+                safe_token = f"_ve{i}_"
+                safe_map[safe_token] = ph
+                protected_prompt = protected_prompt.replace(ph, safe_token, 1)
+
+            # Run Anonymize on protected text
+            sanitized, is_valid, risk_score = _original_scan(protected_prompt)
+
+            # Restore original placeholders
+            for safe_token, original_ph in safe_map.items():
+                sanitized = sanitized.replace(safe_token, original_ph)
+
+            return sanitized, is_valid, risk_score
+
+        scanner.scan = _protected_scan
 
     return scanner
 

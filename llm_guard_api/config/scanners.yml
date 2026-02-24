@@ -6,10 +6,18 @@ app:
   scan_output_timeout: 30
   lazy_load: false
 
+dynamic_lookup:
+  db_type: sqlite
+  db_path: ${DYNAMIC_LOOKUP_DB_PATH:./data/masked_assets.db}
+  cache_ttl: ${DYNAMIC_LOOKUP_CACHE_TTL:300}
+
 input_scanners:
   - type: Secrets
     params:
       redact_mode: all
+  - type: DynamicLookup
+    params:
+      fail_on_db_error: true
   - type: Anonymize
     params:
       language: "tr"
@@ -32,8 +40,21 @@ input_scanners:
         - IBAN_CODE
         - CRYPTO
         - EMAIL_ADDRESS
+        - TR_LICENSE_PLATE
       use_faker: false
       threshold: 0.4
+  - type: Regex
+    params:
+      patterns:
+        - "jdbc:oracle:thin:@//[\\w.\\-]+:\\d+/[\\w.]+"
+        - "jdbc:mysql://[\\w.\\-]+(?::\\d+)?/[\\w]+"
+        - "jdbc:sqlserver://[\\w.\\-]+(?::\\d+)?(?:;[\\w=]+)*"
+        - "jdbc:postgresql://[\\w.\\-]+(?::\\d+)?/[\\w]+"
+        - "(?i)(?:Server|Data Source)\\s*=\\s*[^;]+;\\s*(?:Database|Initial Catalog)\\s*=\\s*[^;]+;\\s*(?:User Id|UID)\\s*=\\s*[^;]+;\\s*(?:Password|PWD)\\s*=\\s*[^;]+"
+        - "\\b[\\w.-]+\\.bankaadi\\.(?:local|com\\.tr)\\b"
+      is_blocked: true
+      match_type: search
+      redact: true
 
 output_scanners:
   - type: Deanonymize

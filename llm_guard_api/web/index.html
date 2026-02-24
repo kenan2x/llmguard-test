@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Guard - Turkce PII Maskeleme Testi</title>
+    <title>LLM Guard - Turkce PII Maskeleme</title>
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
@@ -33,6 +33,48 @@
 
         header h1 span {
             color: #60a5fa;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            background: #fff;
+            border-bottom: 2px solid #e5e7eb;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.875rem 1.5rem;
+            font-family: inherit;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: #6b7280;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn:hover {
+            color: #374151;
+            background: #f9fafb;
+        }
+
+        .tab-btn.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .container {
@@ -136,6 +178,31 @@
         .btn-outline:hover {
             background: #f9fafb;
             border-color: #9ca3af;
+        }
+
+        .btn-sm {
+            font-size: 0.8125rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        .btn-success {
+            background: #22c55e;
+            color: #fff;
+            border-color: #22c55e;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+            border-color: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
         }
 
         .btn-disabled {
@@ -510,6 +577,255 @@
             display: none !important;
         }
 
+        /* ===== Asset Management Tab ===== */
+        .asset-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-top: 0.25rem;
+        }
+
+        .asset-toolbar {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .asset-toolbar input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.5rem 0.875rem;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-family: inherit;
+        }
+
+        .asset-toolbar input[type="text"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+
+        .asset-toolbar select {
+            padding: 0.5rem 0.875rem;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            background: #fff;
+            color: #1f2937;
+        }
+
+        .asset-table-wrap {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .asset-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .asset-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .asset-table td {
+            padding: 0.625rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        .asset-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        .asset-table .actions {
+            display: flex;
+            gap: 0.375rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: 100px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+        }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-cat {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .alias-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .alias-tag {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #fafbfc;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.8125rem;
+            color: #6b7280;
+        }
+
+        .pagination-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #9ca3af;
+            font-size: 0.9375rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 0.375rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.875rem;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.25rem;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-check input[type="checkbox"] {
+            width: auto;
+        }
+
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -536,109 +852,276 @@
             .btn-primary {
                 padding: 0.75rem 1.5rem;
             }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1><span>LLM Guard</span> - Turkce PII Maskeleme Testi</h1>
+        <h1><span>LLM Guard</span> - Banka DLP Sistemi</h1>
     </header>
 
-    <div class="container">
-        <!-- Left Panel: Input -->
-        <div class="panel">
-            <div class="panel-header">Metin Girisi</div>
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('mask')">Maskeleme Testi</button>
+        <button class="tab-btn" onclick="switchTab('assets')">Varlik Yonetimi</button>
+    </div>
 
-            <textarea
-                id="inputText"
-                rows="12"
-                placeholder="Maskelemek istediginiz Turkce metni buraya yazin veya asagidaki orneklerden birini secin..."
-            ></textarea>
+    <!-- ============================================ -->
+    <!-- TAB 1: Maskeleme Testi (existing content)    -->
+    <!-- ============================================ -->
+    <div id="tab-mask" class="tab-content active">
+        <div class="container">
+            <!-- Left Panel: Input -->
+            <div class="panel">
+                <div class="panel-header">Metin Girisi</div>
 
-            <!-- Entity Settings -->
-            <div class="entity-settings" id="entitySettings">
-                <button class="entity-settings-toggle" onclick="toggleEntitySettings()">
-                    <span class="toggle-left">
-                        Entity Ayarlari
-                        <span class="toggle-count" id="entityCount"></span>
-                    </span>
-                    <svg class="chevron" viewBox="0 0 16 16" fill="none">
-                        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-                <div class="entity-settings-body">
-                    <div class="entity-settings-inner">
-                        <div class="entity-group-label">NER Modelleri (BERT + mDeBERTa)</div>
-                        <div class="entity-chips" id="nerChips"></div>
+                <textarea
+                    id="inputText"
+                    rows="12"
+                    placeholder="Maskelemek istediginiz Turkce metni buraya yazin veya asagidaki orneklerden birini secin..."
+                ></textarea>
 
-                        <div class="entity-group-label">Regex Desenleri</div>
-                        <div class="entity-chips" id="regexChips"></div>
+                <!-- Entity Settings -->
+                <div class="entity-settings" id="entitySettings">
+                    <button class="entity-settings-toggle" onclick="toggleEntitySettings()">
+                        <span class="toggle-left">
+                            Entity Ayarlari
+                            <span class="toggle-count" id="entityCount"></span>
+                        </span>
+                        <svg class="chevron" viewBox="0 0 16 16" fill="none">
+                            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <div class="entity-settings-body">
+                        <div class="entity-settings-inner">
+                            <div class="entity-group-label">NER Modelleri (BERT + mDeBERTa)</div>
+                            <div class="entity-chips" id="nerChips"></div>
 
-                        <div class="entity-group-label">mDeBERTa Ek Tipler</div>
-                        <div class="entity-chips" id="mdebertaChips"></div>
+                            <div class="entity-group-label">Regex Desenleri</div>
+                            <div class="entity-chips" id="regexChips"></div>
 
-                        <div class="entity-select-actions">
-                            <button onclick="setAllEntities(true)">Tumunu Sec</button>
-                            <button onclick="setAllEntities(false)">Tumunu Kaldir</button>
+                            <div class="entity-group-label">mDeBERTa Ek Tipler</div>
+                            <div class="entity-chips" id="mdebertaChips"></div>
+
+                            <div class="entity-group-label">Dinamik Varliklar (DynamicLookup)</div>
+                            <div class="entity-chips" id="dynamicChips"></div>
+
+                            <div class="entity-group-label">Tarayicilar (Scanner Ac/Kapa)</div>
+                            <div class="entity-chips" id="scannerChips"></div>
+
+                            <div class="entity-select-actions">
+                                <button onclick="setAllEntities(true)">Tumunu Sec</button>
+                                <button onclick="setAllEntities(false)">Tumunu Kaldir</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <button class="btn btn-primary" id="maskBtn" onclick="handleMask()">
+                    Maskele
+                </button>
+
+                <div class="examples-section">
+                    <div class="examples-label">Ornek Metinler</div>
+                    <div class="examples-grid">
+                        <button class="btn btn-outline" onclick="loadExample(1)">Ornek 1: Kisisel Bilgiler</button>
+                        <button class="btn btn-outline" onclick="loadExample(2)">Ornek 2: Musteri Hizmeti</button>
+                        <button class="btn btn-outline" onclick="loadExample(3)">Ornek 3: Sirket Toplantisi</button>
+                        <button class="btn btn-outline" onclick="loadExample(4)">Ornek 4: Baglanti + Secret</button>
+                    </div>
+                </div>
+
+                <button class="btn btn-disabled" disabled>
+                    LLM'e Gonder (Yakin Zamanda)
+                </button>
             </div>
 
-            <button class="btn btn-primary" id="maskBtn" onclick="handleMask()">
-                Maskele
-            </button>
+            <!-- Right Panel: Results -->
+            <div class="panel">
+                <div class="panel-header">Maskelenmis Metin</div>
 
-            <div class="examples-section">
-                <div class="examples-label">Ornek Metinler</div>
-                <div class="examples-grid">
-                    <button class="btn btn-outline" onclick="loadExample(1)">Ornek 1: Kisisel Bilgiler</button>
-                    <button class="btn btn-outline" onclick="loadExample(2)">Ornek 2: Musteri Hizmeti</button>
-                    <button class="btn btn-outline" onclick="loadExample(3)">Ornek 3: Sirket Toplantisi</button>
-                    <button class="btn btn-outline" onclick="loadExample(4)">Ornek 4: Baglanti + Secret</button>
+                <div id="statusBadge" class="hidden"></div>
+
+                <div class="result-box" id="resultBox">
+                    <span class="result-placeholder">Sonuclar burada gorunecek...</span>
+                </div>
+
+                <div id="errorBox" class="error-box hidden"></div>
+
+                <!-- Legend -->
+                <div class="legend" id="legendSection">
+                    <div class="legend-title">Entity Turleri</div>
+                    <div class="legend-grid" id="legendGrid"></div>
+                </div>
+
+                <!-- Scanner Results Table -->
+                <div id="tableSection" class="hidden">
+                    <table class="scanner-table">
+                        <thead>
+                            <tr>
+                                <th>Tarayici</th>
+                                <th>Skor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scannerTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- TAB 2: Varlik Yonetimi (Asset Management)    -->
+    <!-- ============================================ -->
+    <div id="tab-assets" class="tab-content">
+        <div class="asset-container">
+            <!-- Stats Cards -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-value" id="statTotal">-</div>
+                    <div class="stat-label">Toplam</div>
                 </div>
             </div>
 
-            <button class="btn btn-disabled" disabled>
-                LLM'e Gonder (Yakin Zamanda)
-            </button>
-        </div>
-
-        <!-- Right Panel: Results -->
-        <div class="panel">
-            <div class="panel-header">Maskelenmis Metin</div>
-
-            <div id="statusBadge" class="hidden"></div>
-
-            <div class="result-box" id="resultBox">
-                <span class="result-placeholder">Sonuclar burada gorunecek...</span>
+            <!-- Toolbar -->
+            <div class="asset-toolbar">
+                <input type="text" id="assetSearch" placeholder="Varlik ara..." oninput="debounceAssetSearch()">
+                <select id="assetCategoryFilter" onchange="loadAssets()">
+                    <option value="">Tum Kategoriler</option>
+                    <option value="VM_NAME">VM_NAME</option>
+                    <option value="HOSTNAME">HOSTNAME</option>
+                    <option value="DB_NAME">DB_NAME</option>
+                    <option value="TABLE_NAME">TABLE_NAME</option>
+                    <option value="STORAGE_RESOURCE">STORAGE_RESOURCE</option>
+                    <option value="NETWORK_RESOURCE">NETWORK_RESOURCE</option>
+                    <option value="INTERNAL_URL">INTERNAL_URL</option>
+                    <option value="INTERNAL_SERVICE">INTERNAL_SERVICE</option>
+                    <option value="PROJECT_NAME">PROJECT_NAME</option>
+                </select>
+                <button class="btn btn-outline btn-sm" onclick="refreshCache()">Onbellek Yenile</button>
+                <button class="btn btn-success btn-sm" onclick="openAddModal()">+ Ekle</button>
+                <button class="btn btn-outline btn-sm" onclick="openBulkModal()">Toplu Aktar</button>
             </div>
 
-            <div id="errorBox" class="error-box hidden"></div>
-
-            <!-- Legend -->
-            <div class="legend" id="legendSection">
-                <div class="legend-title">Entity Turleri</div>
-                <div class="legend-grid" id="legendGrid"></div>
-            </div>
-
-            <!-- Scanner Results Table -->
-            <div id="tableSection" class="hidden">
-                <table class="scanner-table">
+            <!-- Asset Table -->
+            <div class="asset-table-wrap">
+                <table class="asset-table">
                     <thead>
                         <tr>
-                            <th>Tarayici</th>
-                            <th>Skor</th>
+                            <th>Ad</th>
+                            <th>Kategori</th>
+                            <th>Kaynak</th>
+                            <th>Alias'lar</th>
+                            <th>Durum</th>
+                            <th>Islemler</th>
                         </tr>
                     </thead>
-                    <tbody id="scannerTableBody">
+                    <tbody id="assetTableBody">
+                        <tr><td colspan="6" class="empty-state">Yukleniyor...</td></tr>
                     </tbody>
                 </table>
+                <div class="pagination">
+                    <span id="paginationInfo">-</span>
+                    <div class="pagination-btns">
+                        <button class="btn btn-outline btn-sm" id="prevBtn" onclick="prevPage()" disabled>Onceki</button>
+                        <button class="btn btn-outline btn-sm" id="nextBtn" onclick="nextPage()" disabled>Sonraki</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Asset Modal -->
+    <div class="modal-overlay" id="assetModal">
+        <div class="modal">
+            <h3 id="modalTitle">Varlik Ekle</h3>
+            <input type="hidden" id="editAssetId">
+            <div class="form-group">
+                <label>Ad *</label>
+                <input type="text" id="modalName" placeholder="ornegin: prod-db-oracle-01">
+            </div>
+            <div class="form-group">
+                <label>Kategori *</label>
+                <select id="modalCategory">
+                    <option value="VM_NAME">VM_NAME</option>
+                    <option value="HOSTNAME">HOSTNAME</option>
+                    <option value="DB_NAME">DB_NAME</option>
+                    <option value="TABLE_NAME">TABLE_NAME</option>
+                    <option value="STORAGE_RESOURCE">STORAGE_RESOURCE</option>
+                    <option value="NETWORK_RESOURCE">NETWORK_RESOURCE</option>
+                    <option value="INTERNAL_URL">INTERNAL_URL</option>
+                    <option value="INTERNAL_SERVICE">INTERNAL_SERVICE</option>
+                    <option value="PROJECT_NAME">PROJECT_NAME</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Kaynak</label>
+                <input type="text" id="modalSource" placeholder="ornegin: CMDB, Manuel">
+            </div>
+            <div class="form-group">
+                <label>Alias'lar (virgul ile ayirin)</label>
+                <input type="text" id="modalAliases" placeholder="ornegin: prod-db, oracle-01">
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <input type="checkbox" id="modalActive" checked>
+                    <label for="modalActive" style="margin:0">Aktif</label>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-outline" onclick="closeModal('assetModal')">Iptal</button>
+                <button class="btn btn-primary" style="width:auto;margin:0" onclick="saveAsset()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Import Modal -->
+    <div class="modal-overlay" id="bulkModal">
+        <div class="modal">
+            <h3>Toplu Varlik Aktarimi</h3>
+            <div class="form-group">
+                <label>JSON Dizisi veya CSV (Ad, Kategori, Kaynak, Alias'lar)</label>
+                <textarea id="bulkData" rows="10" placeholder='[{"name":"prod-db-01","category":"HOSTNAME","source":"CMDB"}]
+
+veya CSV:
+prod-db-01,HOSTNAME,CMDB,
+app-server-02,VM_NAME,Manuel,"alias1,alias2"'></textarea>
+            </div>
+            <div id="bulkResult" class="hidden" style="margin-bottom:1rem"></div>
+            <div class="form-actions">
+                <button class="btn btn-outline" onclick="closeModal('bulkModal')">Kapat</button>
+                <button class="btn btn-primary" style="width:auto;margin:0" onclick="bulkImport()">Aktar</button>
             </div>
         </div>
     </div>
 
     <script>
+        // ========================================
+        // Tab Navigation
+        // ========================================
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+            document.querySelectorAll('.tab-content').forEach(function(tc) { tc.classList.remove('active'); });
+
+            if (tab === 'mask') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('tab-mask').classList.add('active');
+            } else {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('tab-assets').classList.add('active');
+                loadStats();
+                loadAssets();
+            }
+        }
+
+        // ========================================
+        // Maskeleme Testi (Tab 1) - Original Code
+        // ========================================
         const EXAMPLES = {
             1: "Merhaba, ben Ahmet Yilmaz. Istanbul Kadikoy'de yasiyorum. TC Kimlik numaram 12345678901. Bana 0532 123 45 67 numarasindan ulasabilirsiniz. E-posta: ahmet.yilmaz@firma.com.tr IBAN: TR330006100519786457841326",
             2: "Turk Telekom AS musteri hizmetlerini aradigimda, temsilci Fatma Kaya beni bilgilendirdi. Vergi kimlik numaram 9876543210. Kredi kart numaram 4567-8901-2345-6789.",
@@ -646,58 +1129,71 @@
             4: "Veritabani baglantisi: postgresql://admin:SecretPass99@10.200.5.150:5432/verimon_db\nAPI anahtari: sk-proj-abc123def456ghi789 \nMustafa Demir 15 Mart 2024 tarihinde https://portal.sirket.com.tr adresinden erisim sagladi."
         };
 
-        // All entity types with display info, grouped
+        // suppress='entity' → entity_types_suppress (Anonymize)
+        // suppress='scanner' → scanners_suppress (tam tarayici)
         const ENTITY_DEFS = {
-            // NER models (BERT + mDeBERTa shared)
             ner: [
-                { id: 'PERSON', label: 'Person', color: '#3b82f6' },
-                { id: 'LOCATION', label: 'Location', color: '#22c55e' },
-                { id: 'ORGANIZATION', label: 'Organization', color: '#a855f7' },
+                { id: 'PERSON', label: 'Person', color: '#3b82f6', suppress: 'entity' },
+                { id: 'LOCATION', label: 'Location', color: '#22c55e', suppress: 'entity' },
+                { id: 'ORGANIZATION', label: 'Organization', color: '#a855f7', suppress: 'entity' },
             ],
-            // Regex patterns
             regex: [
-                { id: 'EMAIL_ADDRESS_RE', label: 'Email (Regex)', color: '#06b6d4' },
-                { id: 'TURKISH_PHONE', label: 'Telefon TR', color: '#f97316' },
-                { id: 'IBAN_TR', label: 'IBAN TR', color: '#eab308' },
-                { id: 'TC_KIMLIK', label: 'TC Kimlik', color: '#ef4444' },
-                { id: 'TAX_NUMBER_TR', label: 'Vergi No', color: '#14b8a6' },
-                { id: 'CREDIT_CARD_RE', label: 'Kredi Kart (Regex)', color: '#ec4899' },
-                { id: 'IP_ADDRESS', label: 'IP Adresi', color: '#6366f1' },
-                { id: 'UUID', label: 'UUID', color: '#8b5cf6' },
+                { id: 'EMAIL_ADDRESS_RE', label: 'Email (Regex)', color: '#06b6d4', suppress: 'entity' },
+                { id: 'TURKISH_PHONE', label: 'Telefon TR', color: '#f97316', suppress: 'entity' },
+                { id: 'IBAN_TR', label: 'IBAN TR', color: '#eab308', suppress: 'entity' },
+                { id: 'TC_KIMLIK', label: 'TC Kimlik', color: '#ef4444', suppress: 'entity' },
+                { id: 'TAX_NUMBER_TR', label: 'Vergi No', color: '#14b8a6', suppress: 'entity' },
+                { id: 'CREDIT_CARD_RE', label: 'Kredi Kart (Regex)', color: '#ec4899', suppress: 'entity' },
+                { id: 'IP_ADDRESS', label: 'IP Adresi', color: '#6366f1', suppress: 'entity' },
+                { id: 'UUID', label: 'UUID', color: '#8b5cf6', suppress: 'entity' },
+                { id: 'TR_LICENSE_PLATE', label: 'Plaka', color: '#d97706', suppress: 'entity' },
             ],
-            // mDeBERTa additional types
             mdeberta: [
-                { id: 'URL', label: 'URL', color: '#0ea5e9' },
-                { id: 'DATE_TIME', label: 'Tarih/Saat', color: '#d946ef' },
-                { id: 'PHONE_NUMBER', label: 'Telefon (ML)', color: '#f59e0b' },
-                { id: 'CREDIT_CARD', label: 'Kredi Kart (ML)', color: '#e11d48' },
-                { id: 'IBAN_CODE', label: 'IBAN (ML)', color: '#ca8a04' },
-                { id: 'CRYPTO', label: 'Kripto Adres', color: '#7c3aed' },
-                { id: 'EMAIL_ADDRESS', label: 'Email (ML)', color: '#0891b2' },
+                { id: 'URL', label: 'URL', color: '#0ea5e9', suppress: 'entity' },
+                { id: 'DATE_TIME', label: 'Tarih/Saat', color: '#d946ef', suppress: 'entity' },
+                { id: 'PHONE_NUMBER', label: 'Telefon (ML)', color: '#f59e0b', suppress: 'entity' },
+                { id: 'CREDIT_CARD', label: 'Kredi Kart (ML)', color: '#e11d48', suppress: 'entity' },
+                { id: 'IBAN_CODE', label: 'IBAN (ML)', color: '#ca8a04', suppress: 'entity' },
+                { id: 'CRYPTO', label: 'Kripto Adres', color: '#7c3aed', suppress: 'entity' },
+                { id: 'EMAIL_ADDRESS', label: 'Email (ML)', color: '#0891b2', suppress: 'entity' },
+            ],
+            dynamic: [
+                { id: 'VM_NAME', label: 'VM Adi', color: '#059669', suppress: 'scanner', scanner: 'DynamicLookup' },
+                { id: 'HOSTNAME', label: 'Hostname', color: '#0284c7', suppress: 'scanner', scanner: 'DynamicLookup' },
+                { id: 'DB_NAME', label: 'Veritabani', color: '#7c3aed', suppress: 'scanner', scanner: 'DynamicLookup' },
+                { id: 'TABLE_NAME', label: 'Tablo', color: '#be185d', suppress: 'scanner', scanner: 'DynamicLookup' },
+                { id: 'STORAGE_RESOURCE', label: 'Depolama', color: '#b45309', suppress: 'scanner', scanner: 'DynamicLookup' },
+                { id: 'NETWORK_RESOURCE', label: 'Ag Kaynagi', color: '#4338ca', suppress: 'scanner', scanner: 'DynamicLookup' },
+                { id: 'INTERNAL_URL', label: 'Ic URL', color: '#0f766e', suppress: 'scanner', scanner: 'DynamicLookup' },
+                { id: 'INTERNAL_SERVICE', label: 'Ic Servis', color: '#a21caf', suppress: 'scanner', scanner: 'DynamicLookup' },
+                { id: 'PROJECT_NAME', label: 'Proje', color: '#c2410c', suppress: 'scanner', scanner: 'DynamicLookup' },
+            ],
+            scanners: [
+                { id: '_SCANNER_Secrets', label: 'Secrets', color: '#b91c1c', suppress: 'scanner', scanner: 'Secrets' },
+                { id: '_SCANNER_DynamicLookup', label: 'DynamicLookup', color: '#0369a1', suppress: 'scanner', scanner: 'DynamicLookup' },
+                { id: '_SCANNER_Regex', label: 'Regex (JDBC/ADO)', color: '#9333ea', suppress: 'scanner', scanner: 'Regex' },
             ]
         };
 
-        // Build flat color map for highlighting
         const ENTITY_COLORS = {};
         Object.values(ENTITY_DEFS).flat().forEach(function(e) {
             ENTITY_COLORS[e.id] = e.color;
         });
-        // Secrets scanner gets its own color
+        // Ensure DynamicLookup category colors are in ENTITY_COLORS for highlighting
         ENTITY_COLORS['SECRET'] = '#b91c1c';
 
         const DEFAULT_COLOR = '#6b7280';
 
-        // Entity active state
         const entityActive = {};
         Object.values(ENTITY_DEFS).flat().forEach(function(e) {
             entityActive[e.id] = true;
         });
 
         function buildChips(containerId, entities) {
-            const container = document.getElementById(containerId);
+            var container = document.getElementById(containerId);
             container.innerHTML = '';
             entities.forEach(function(e) {
-                const chip = document.createElement('span');
+                var chip = document.createElement('span');
                 chip.className = 'entity-chip active';
                 chip.dataset.entityId = e.id;
                 chip.style.background = e.color;
@@ -710,7 +1206,7 @@
         function toggleEntity(id, chip) {
             entityActive[id] = !entityActive[id];
             if (entityActive[id]) {
-                const def = Object.values(ENTITY_DEFS).flat().find(function(e) { return e.id === id; });
+                var def = Object.values(ENTITY_DEFS).flat().find(function(e) { return e.id === id; });
                 chip.className = 'entity-chip active';
                 chip.style.background = def ? def.color : DEFAULT_COLOR;
             } else {
@@ -742,12 +1238,27 @@
             document.getElementById('entityCount').textContent = active + '/' + total + ' aktif';
         }
 
-        function getSuppressedEntities() {
-            var suppressed = [];
+        function getSuppression() {
+            var entitySuppress = [];
+            var scannerSuppress = new Set();
+            var allDefs = Object.values(ENTITY_DEFS).flat();
+
             Object.entries(entityActive).forEach(function([id, active]) {
-                if (!active) suppressed.push(id);
+                if (active) return;
+                var def = allDefs.find(function(e) { return e.id === id; });
+                if (!def) return;
+
+                if (def.suppress === 'scanner' && def.scanner) {
+                    scannerSuppress.add(def.scanner);
+                } else {
+                    entitySuppress.push(id);
+                }
             });
-            return suppressed;
+
+            return {
+                entity_types_suppress: entitySuppress,
+                scanners_suppress: Array.from(scannerSuppress)
+            };
         }
 
         function toggleEntitySettings() {
@@ -757,23 +1268,23 @@
         function buildLegend() {
             var grid = document.getElementById('legendGrid');
             grid.innerHTML = '';
+            // Show all entity types from all groups in legend
             Object.values(ENTITY_DEFS).flat().forEach(function(e) {
+                // Skip scanner-level toggles (they duplicate dynamic categories)
+                if (e.id.startsWith('_SCANNER_')) return;
                 var item = document.createElement('div');
                 item.className = 'legend-item';
                 item.innerHTML = '<span class="legend-dot" style="background:' + e.color + '"></span>' + e.label;
                 grid.appendChild(item);
             });
-            // Add Secrets indicator
-            var secretItem = document.createElement('div');
-            secretItem.className = 'legend-item';
-            secretItem.innerHTML = '<span class="legend-dot" style="background:#b91c1c"></span>Secrets';
-            grid.appendChild(secretItem);
         }
 
-        // Initialize
+        // Initialize mask tab
         buildChips('nerChips', ENTITY_DEFS.ner);
         buildChips('regexChips', ENTITY_DEFS.regex);
         buildChips('mdebertaChips', ENTITY_DEFS.mdeberta);
+        buildChips('dynamicChips', ENTITY_DEFS.dynamic);
+        buildChips('scannerChips', ENTITY_DEFS.scanners);
         updateEntityCount();
         buildLegend();
 
@@ -782,25 +1293,23 @@
         }
 
         function getEntityColor(entityType) {
-            for (const [key, color] of Object.entries(ENTITY_COLORS)) {
+            for (var key in ENTITY_COLORS) {
                 if (entityType.toUpperCase().includes(key)) {
-                    return color;
+                    return ENTITY_COLORS[key];
                 }
             }
             return DEFAULT_COLOR;
         }
 
         function highlightEntities(text) {
-            // Match patterns like [REDACTED_XXX_N] and also ****** for secrets
-            var result = text.replace(/\[REDACTED_([A-Z_]+?)_(\d+)\]/g, function(match, entityType, num) {
+            return text.replace(/\[REDACTED_([A-Z_]+?)_(\d+)\]/g, function(match, entityType, num) {
                 var color = getEntityColor(entityType);
                 return '<span class="entity-tag" style="background:' + color + '">' + escapeHtml(match) + '</span>';
             });
-            return result;
         }
 
         function escapeHtml(str) {
-            const div = document.createElement('div');
+            var div = document.createElement('div');
             div.appendChild(document.createTextNode(str));
             return div.innerHTML;
         }
@@ -812,7 +1321,7 @@
         }
 
         function setLoading(loading) {
-            const btn = document.getElementById('maskBtn');
+            var btn = document.getElementById('maskBtn');
             if (loading) {
                 btn.disabled = true;
                 btn.innerHTML = '<span class="spinner"></span> Maskeleniyor...';
@@ -823,11 +1332,10 @@
         }
 
         function showError(message) {
-            const resultBox = document.getElementById('resultBox');
-            const errorBox = document.getElementById('errorBox');
-            const statusBadge = document.getElementById('statusBadge');
-            const tableSection = document.getElementById('tableSection');
-
+            var resultBox = document.getElementById('resultBox');
+            var errorBox = document.getElementById('errorBox');
+            var statusBadge = document.getElementById('statusBadge');
+            var tableSection = document.getElementById('tableSection');
             resultBox.classList.add('hidden');
             errorBox.classList.remove('hidden');
             errorBox.textContent = message;
@@ -836,20 +1344,18 @@
         }
 
         function showResults(data) {
-            const resultBox = document.getElementById('resultBox');
-            const errorBox = document.getElementById('errorBox');
-            const statusBadge = document.getElementById('statusBadge');
-            const tableSection = document.getElementById('tableSection');
-            const tableBody = document.getElementById('scannerTableBody');
+            var resultBox = document.getElementById('resultBox');
+            var errorBox = document.getElementById('errorBox');
+            var statusBadge = document.getElementById('statusBadge');
+            var tableSection = document.getElementById('tableSection');
+            var tableBody = document.getElementById('scannerTableBody');
 
             errorBox.classList.add('hidden');
             resultBox.classList.remove('hidden');
 
-            // Masked text with entity highlighting
-            const sanitized = data.sanitized_prompt || '';
+            var sanitized = data.sanitized_prompt || '';
             resultBox.innerHTML = highlightEntities(escapeHtml(sanitized));
 
-            // Status badge
             statusBadge.classList.remove('hidden', 'status-safe', 'status-unsafe');
             if (data.is_valid) {
                 statusBadge.className = 'status-badge status-safe';
@@ -859,28 +1365,18 @@
                 statusBadge.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM7 5a1 1 0 1 1 2 0v3a1 1 0 0 1-2 0V5zm1 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" fill="currentColor"/></svg> Hassas Veri Tespit Edildi';
             }
 
-            // Scanner results table
-            const scanners = data.scanners || {};
-            const scannerEntries = Object.entries(scanners);
-
+            var scanners = data.scanners || {};
+            var scannerEntries = Object.entries(scanners);
             if (scannerEntries.length > 0) {
                 tableSection.classList.remove('hidden');
                 tableBody.innerHTML = '';
-
                 scannerEntries.forEach(function([name, score]) {
-                    const color = getScoreColor(score);
-                    const pct = Math.round(score * 100);
-                    const row = document.createElement('tr');
+                    var color = getScoreColor(score);
+                    var pct = Math.round(score * 100);
+                    var row = document.createElement('tr');
                     row.innerHTML =
                         '<td>' + escapeHtml(name) + '</td>' +
-                        '<td>' +
-                            '<div class="score-bar">' +
-                                '<div class="score-bar-track">' +
-                                    '<div class="score-bar-fill" style="width:' + pct + '%;background:' + color + '"></div>' +
-                                '</div>' +
-                                '<span class="score-value" style="color:' + color + '">' + score.toFixed(2) + '</span>' +
-                            '</div>' +
-                        '</td>';
+                        '<td><div class="score-bar"><div class="score-bar-track"><div class="score-bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div><span class="score-value" style="color:' + color + '">' + score.toFixed(2) + '</span></div></td>';
                     tableBody.appendChild(row);
                 });
             } else {
@@ -889,35 +1385,32 @@
         }
 
         async function handleMask() {
-            const text = document.getElementById('inputText').value.trim();
+            var text = document.getElementById('inputText').value.trim();
             if (!text) {
                 showError('Lutfen maskelemek icin bir metin girin.');
                 return;
             }
-
             setLoading(true);
-
             try {
                 var body = { prompt: text };
-                var suppressed = getSuppressedEntities();
-                if (suppressed.length > 0) {
-                    body.entity_types_suppress = suppressed;
+                var suppression = getSuppression();
+                if (suppression.entity_types_suppress.length > 0) {
+                    body.entity_types_suppress = suppression.entity_types_suppress;
+                }
+                if (suppression.scanners_suppress.length > 0) {
+                    body.scanners_suppress = suppression.scanners_suppress;
                 }
 
-                const response = await fetch('/analyze/prompt', {
+                var response = await fetch('/analyze/prompt', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
                 });
-
                 if (!response.ok) {
-                    const errData = await response.json().catch(function() { return {}; });
+                    var errData = await response.json().catch(function() { return {}; });
                     throw new Error(errData.message || errData.detail || 'Sunucu hatasi (HTTP ' + response.status + ')');
                 }
-
-                const data = await response.json();
+                var data = await response.json();
                 showResults(data);
             } catch (err) {
                 showError('Hata: ' + err.message);
@@ -926,11 +1419,275 @@
             }
         }
 
-        // Allow Ctrl+Enter to submit
         document.getElementById('inputText').addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'Enter') {
-                handleMask();
+            if (e.ctrlKey && e.key === 'Enter') handleMask();
+        });
+
+        // ========================================
+        // Varlik Yonetimi (Tab 2) - Asset Management
+        // ========================================
+        var assetPage = { offset: 0, limit: 50, total: 0 };
+        var searchTimer = null;
+
+        function debounceAssetSearch() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(function() {
+                assetPage.offset = 0;
+                loadAssets();
+            }, 300);
+        }
+
+        async function loadStats() {
+            try {
+                var res = await fetch('/api/v1/masked-assets/stats');
+                if (!res.ok) return;
+                var data = await res.json();
+                var grid = document.getElementById('statsGrid');
+                grid.innerHTML = '';
+
+                var total = data.stats.TOTAL || 0;
+                grid.innerHTML += '<div class="stat-card"><div class="stat-value">' + total + '</div><div class="stat-label">Toplam Aktif</div></div>';
+
+                var categories = ['VM_NAME','HOSTNAME','DB_NAME','TABLE_NAME','STORAGE_RESOURCE','NETWORK_RESOURCE','INTERNAL_URL','INTERNAL_SERVICE','PROJECT_NAME'];
+                categories.forEach(function(cat) {
+                    var count = data.stats[cat] || 0;
+                    if (count > 0 || total > 0) {
+                        grid.innerHTML += '<div class="stat-card"><div class="stat-value">' + count + '</div><div class="stat-label">' + cat + '</div></div>';
+                    }
+                });
+            } catch (e) {
+                console.error('Stats error:', e);
             }
+        }
+
+        async function loadAssets() {
+            var search = document.getElementById('assetSearch').value.trim();
+            var category = document.getElementById('assetCategoryFilter').value;
+
+            var params = new URLSearchParams();
+            if (search) params.set('search', search);
+            if (category) params.set('category', category);
+            params.set('offset', assetPage.offset);
+            params.set('limit', assetPage.limit);
+
+            try {
+                var res = await fetch('/api/v1/masked-assets/?' + params.toString());
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                var data = await res.json();
+                assetPage.total = data.total;
+                renderAssetTable(data.items);
+                updatePagination();
+            } catch (e) {
+                document.getElementById('assetTableBody').innerHTML = '<tr><td colspan="6" class="empty-state">Hata: ' + escapeHtml(e.message) + '</td></tr>';
+            }
+        }
+
+        function renderAssetTable(items) {
+            var tbody = document.getElementById('assetTableBody');
+            if (!items || items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Varlik bulunamadi. "Ekle" veya "Toplu Aktar" butonlarini kullanin.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = '';
+            items.forEach(function(asset) {
+                var tr = document.createElement('tr');
+                var aliasHtml = '';
+                if (asset.aliases && asset.aliases.length > 0) {
+                    aliasHtml = '<div class="alias-list">' + asset.aliases.map(function(a) { return '<span class="alias-tag">' + escapeHtml(a) + '</span>'; }).join('') + '</div>';
+                } else {
+                    aliasHtml = '<span style="color:#9ca3af">-</span>';
+                }
+                tr.innerHTML =
+                    '<td><strong>' + escapeHtml(asset.name) + '</strong></td>' +
+                    '<td><span class="badge badge-cat">' + escapeHtml(asset.category) + '</span></td>' +
+                    '<td>' + escapeHtml(asset.source || '-') + '</td>' +
+                    '<td>' + aliasHtml + '</td>' +
+                    '<td><span class="badge ' + (asset.is_active ? 'badge-active' : 'badge-inactive') + '">' + (asset.is_active ? 'Aktif' : 'Pasif') + '</span></td>' +
+                    '<td><div class="actions">' +
+                        '<button class="btn btn-outline btn-sm" onclick="editAsset(\'' + asset.id + '\',\'' + escapeHtml(asset.name) + '\',\'' + asset.category + '\',\'' + escapeHtml(asset.source || '') + '\',\'' + escapeHtml((asset.aliases||[]).join(',')) + '\',' + asset.is_active + ')">Duzenle</button>' +
+                        '<button class="btn btn-danger btn-sm" onclick="deleteAsset(\'' + asset.id + '\',\'' + escapeHtml(asset.name) + '\')">Sil</button>' +
+                    '</div></td>';
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updatePagination() {
+            var info = document.getElementById('paginationInfo');
+            var from = assetPage.total > 0 ? assetPage.offset + 1 : 0;
+            var to = Math.min(assetPage.offset + assetPage.limit, assetPage.total);
+            info.textContent = from + '-' + to + ' / ' + assetPage.total;
+
+            document.getElementById('prevBtn').disabled = assetPage.offset === 0;
+            document.getElementById('nextBtn').disabled = assetPage.offset + assetPage.limit >= assetPage.total;
+        }
+
+        function prevPage() {
+            assetPage.offset = Math.max(0, assetPage.offset - assetPage.limit);
+            loadAssets();
+        }
+
+        function nextPage() {
+            assetPage.offset += assetPage.limit;
+            loadAssets();
+        }
+
+        async function refreshCache() {
+            try {
+                var res = await fetch('/api/v1/masked-assets/sync', { method: 'POST' });
+                var data = await res.json();
+                alert('Onbellek yenilendi. Varlik sayisi: ' + data.asset_count);
+                loadStats();
+            } catch (e) {
+                alert('Hata: ' + e.message);
+            }
+        }
+
+        // Add/Edit Modal
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = 'Varlik Ekle';
+            document.getElementById('editAssetId').value = '';
+            document.getElementById('modalName').value = '';
+            document.getElementById('modalCategory').value = 'HOSTNAME';
+            document.getElementById('modalSource').value = '';
+            document.getElementById('modalAliases').value = '';
+            document.getElementById('modalActive').checked = true;
+            document.getElementById('assetModal').classList.add('open');
+        }
+
+        function editAsset(id, name, category, source, aliases, isActive) {
+            document.getElementById('modalTitle').textContent = 'Varlik Duzenle';
+            document.getElementById('editAssetId').value = id;
+            document.getElementById('modalName').value = name;
+            document.getElementById('modalCategory').value = category;
+            document.getElementById('modalSource').value = source;
+            document.getElementById('modalAliases').value = aliases;
+            document.getElementById('modalActive').checked = isActive;
+            document.getElementById('assetModal').classList.add('open');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+
+        async function saveAsset() {
+            var id = document.getElementById('editAssetId').value;
+            var name = document.getElementById('modalName').value.trim();
+            var category = document.getElementById('modalCategory').value;
+            var source = document.getElementById('modalSource').value.trim();
+            var aliasStr = document.getElementById('modalAliases').value.trim();
+            var isActive = document.getElementById('modalActive').checked;
+
+            if (!name) { alert('Ad alani zorunludur.'); return; }
+
+            var aliases = aliasStr ? aliasStr.split(',').map(function(a) { return a.trim(); }).filter(Boolean) : [];
+            var body = { name: name, category: category, source: source, aliases: aliases, is_active: isActive };
+
+            try {
+                var url, method;
+                if (id) {
+                    url = '/api/v1/masked-assets/' + id;
+                    method = 'PUT';
+                } else {
+                    url = '/api/v1/masked-assets/';
+                    method = 'POST';
+                }
+                var res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!res.ok) {
+                    var err = await res.json().catch(function() { return {}; });
+                    throw new Error(err.detail || err.message || 'HTTP ' + res.status);
+                }
+                closeModal('assetModal');
+                loadStats();
+                loadAssets();
+            } catch (e) {
+                alert('Hata: ' + e.message);
+            }
+        }
+
+        async function deleteAsset(id, name) {
+            if (!confirm('"' + name + '" varligini silmek istediginize emin misiniz?')) return;
+            try {
+                var res = await fetch('/api/v1/masked-assets/' + id, { method: 'DELETE' });
+                if (!res.ok && res.status !== 204) throw new Error('HTTP ' + res.status);
+                loadStats();
+                loadAssets();
+            } catch (e) {
+                alert('Silme hatasi: ' + e.message);
+            }
+        }
+
+        // Bulk Import
+        function openBulkModal() {
+            document.getElementById('bulkData').value = '';
+            document.getElementById('bulkResult').classList.add('hidden');
+            document.getElementById('bulkModal').classList.add('open');
+        }
+
+        async function bulkImport() {
+            var raw = document.getElementById('bulkData').value.trim();
+            if (!raw) { alert('Veri girin.'); return; }
+
+            var assets = [];
+            try {
+                // Try JSON first
+                var parsed = JSON.parse(raw);
+                if (Array.isArray(parsed)) {
+                    assets = parsed;
+                } else {
+                    throw new Error('JSON dizisi bekleniyor');
+                }
+            } catch (e) {
+                // Try CSV
+                var lines = raw.split('\n').filter(function(l) { return l.trim(); });
+                lines.forEach(function(line) {
+                    var parts = line.split(',');
+                    if (parts.length >= 2) {
+                        var name = parts[0].trim();
+                        var category = parts[1].trim();
+                        var source = parts.length > 2 ? parts[2].trim() : '';
+                        var aliases = parts.length > 3 ? parts.slice(3).join(',').replace(/"/g,'').split(',').filter(Boolean).map(function(a) { return a.trim(); }) : [];
+                        if (name && category) {
+                            assets.push({ name: name, category: category, source: source, aliases: aliases });
+                        }
+                    }
+                });
+            }
+
+            if (assets.length === 0) {
+                alert('Gecerli varlik bulunamadi. JSON dizisi veya CSV formati kullanin.');
+                return;
+            }
+
+            try {
+                var res = await fetch('/api/v1/masked-assets/bulk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ assets: assets })
+                });
+                if (!res.ok) {
+                    var err = await res.json().catch(function() { return {}; });
+                    throw new Error(err.detail || err.message || 'HTTP ' + res.status);
+                }
+                var data = await res.json();
+                var resultDiv = document.getElementById('bulkResult');
+                resultDiv.classList.remove('hidden');
+                resultDiv.innerHTML = '<div class="status-badge status-safe">' + data.created + ' / ' + data.total_submitted + ' varlik olusturuldu</div>';
+                loadStats();
+                loadAssets();
+            } catch (e) {
+                alert('Aktarim hatasi: ' + e.message);
+            }
+        }
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) overlay.classList.remove('open');
+            });
         });
     </script>
 </body>

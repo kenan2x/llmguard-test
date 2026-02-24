@@ -49,6 +49,13 @@ class ScannerConfig(BaseModel):
     params: Optional[Dict] = Field(default_factory=dict)
 
 
+class DynamicLookupConfig(BaseModel):
+    db_type: str = Field(default="sqlite")
+    db_path: str = Field(default="./data/masked_assets.db")
+    connection_uri: Optional[str] = Field(default=None)
+    cache_ttl: int = Field(default=300)
+
+
 class Config(BaseModel):
     input_scanners: List[ScannerConfig] = Field()
     output_scanners: List[ScannerConfig] = Field()
@@ -57,6 +64,7 @@ class Config(BaseModel):
     app: AppConfig = Field(default_factory=AppConfig)
     tracing: Optional[TracingConfig] = Field(default=None)
     metrics: Optional[MetricsConfig] = Field(default=None)
+    dynamic_lookup: Optional[DynamicLookupConfig] = Field(default=None)
 
 
 def _path_constructor(_loader: Any, node: Any):

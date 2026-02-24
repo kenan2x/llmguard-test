@@ -1,0 +1,95 @@
+# Offline-capable Docker image for LLM Guard API (linux/amd64)
+# Build with internet — run without.
+#
+# Build (from repo root, NOT llm_guard_api/):
+#   docker build --platform linux/amd64 -f llm_guard_api/Dockerfile.offline -t llm-guard-api:offline .
+#
+# Run (offline test):
+#   docker run --rm --network none -p 8000:8000 llm-guard-api:offline
+
+# ============================================================
+# Stage 1: builder — install deps, download models
+# ============================================================
+FROM --platform=linux/amd64 python:3.12-slim AS builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+
+# Install Python dependencies
+COPY llm_guard_api/pyproject.toml ./
+COPY llm_guard_api/app ./app
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir ".[cpu]"
+
+# Download spaCy model
+RUN python -m spacy download en_core_web_sm
+
+# Download all HuggingFace models into cache
+COPY llm_guard_api/download_models.py ./
+RUN python download_models.py
+
+# ============================================================
+# Stage 2: runtime — slim image with everything baked in
+# ============================================================
+FROM --platform=linux/amd64 python:3.12-slim AS runtime
+
+LABEL org.opencontainers.image.source=https://github.com/protectai/llm-guard
+LABEL org.opencontainers.image.description="LLM Guard API (offline)"
+LABEL org.opencontainers.image.licenses=MIT
+
+# Copy installed Python packages from builder
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Copy HuggingFace model cache (downloaded as root in builder)
+COPY --from=builder /root/.cache/huggingface /tmp/hf_cache
+
+# Create non-root user and move HF cache to user home
+RUN useradd -m -u 1000 user && \
+    mkdir -p /home/user/.cache && \
+    mv /tmp/hf_cache /home/user/.cache/huggingface && \
+    chown -R user:user /home/user/.cache
+
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:/usr/local/bin:$PATH \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    HF_HUB_OFFLINE=1 \
+    TRANSFORMERS_OFFLINE=1
+
+WORKDIR /home/user/app
+
+# Copy application files
+COPY --chown=user:user llm_guard_api/app ./app
+COPY --chown=user:user llm_guard_api/web ./web
+COPY --chown=user:user llm_guard_api/config/scanners.yml ./config/scanners.yml
+COPY --chown=user:user llm_guard_api/entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+# Copy pyproject.toml (needed for package metadata)
+COPY --chown=user:user llm_guard_api/pyproject.toml ./
+
+# Override core library files with local modifications
+# These contain custom scanners (DynamicLookup) and Turkish PII support
+COPY llm_guard/input_scanners/dynamic_lookup.py \
+    /usr/local/lib/python3.12/site-packages/llm_guard/input_scanners/dynamic_lookup.py
+COPY llm_guard/input_scanners/__init__.py \
+    /usr/local/lib/python3.12/site-packages/llm_guard/input_scanners/__init__.py
+COPY llm_guard/input_scanners/util.py \
+    /usr/local/lib/python3.12/site-packages/llm_guard/input_scanners/util.py
+COPY llm_guard/input_scanners/anonymize_helpers/regex_patterns.py \
+    /usr/local/lib/python3.12/site-packages/llm_guard/input_scanners/anonymize_helpers/regex_patterns.py
+
+# Data directory for SQLite DB (mount point for volumes)
+RUN mkdir -p /home/user/app/data && chown user:user /home/user/app/data
+
+ENV PYTHONPATH=/home/user/app
+
+USER user
+
+EXPOSE 8000
+
+ENTRYPOINT ["./entrypoint.sh"]
