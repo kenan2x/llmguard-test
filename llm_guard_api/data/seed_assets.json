@@ -1,0 +1,65 @@
+{
+  "assets": [
+    {"name": "ISTVMPWEB001", "category": "VM_NAME", "source": "vcenter", "aliases": ["istvmpweb001"]},
+    {"name": "ISTVMPWEB002", "category": "VM_NAME", "source": "vcenter", "aliases": []},
+    {"name": "ISTVMPAPP001", "category": "VM_NAME", "source": "vcenter", "aliases": []},
+    {"name": "ISTVMPSQL001", "category": "VM_NAME", "source": "vcenter", "aliases": ["ist-sql-prod-01"]},
+    {"name": "ISTVMPSQL002", "category": "VM_NAME", "source": "vcenter", "aliases": []},
+    {"name": "DRVMPWEB001", "category": "VM_NAME", "source": "vcenter", "aliases": []},
+    {"name": "DRVMPSQL001", "category": "VM_NAME", "source": "vcenter", "aliases": []},
+    {"name": "ISTVMDDEV001", "category": "VM_NAME", "source": "vcenter", "aliases": []},
+    {"name": "ISTVMDTEST001", "category": "VM_NAME", "source": "vcenter", "aliases": []},
+    {"name": "ISTVMPKUBE001", "category": "VM_NAME", "source": "vcenter", "aliases": []},
+
+    {"name": "prod-db-oracle-01.bfrbank.local", "category": "HOSTNAME", "source": "dns", "aliases": ["prod-db-oracle-01"]},
+    {"name": "prod-db-mssql-01.bfrbank.local", "category": "HOSTNAME", "source": "dns", "aliases": ["prod-db-mssql-01"]},
+    {"name": "prod-app-web-01.bfrbank.local", "category": "HOSTNAME", "source": "dns", "aliases": ["prod-app-web-01"]},
+    {"name": "dr-db-oracle-01.bfrbank.local", "category": "HOSTNAME", "source": "dns", "aliases": ["dr-db-oracle-01"]},
+    {"name": "kube-master-01.bfrbank.local", "category": "HOSTNAME", "source": "dns", "aliases": ["kube-master-01"]},
+    {"name": "grafana.bfrbank.local", "category": "HOSTNAME", "source": "dns", "aliases": []},
+    {"name": "vault.bfrbank.local", "category": "HOSTNAME", "source": "dns", "aliases": []},
+    {"name": "gitlab.bfrbank.local", "category": "HOSTNAME", "source": "dns", "aliases": []},
+
+    {"name": "BFRBNK_CORE", "category": "DB_NAME", "source": "dba", "aliases": ["bfrbnk_core"]},
+    {"name": "BFRBNK_CARD", "category": "DB_NAME", "source": "dba", "aliases": ["bfrbnk_card"]},
+    {"name": "BFRBNK_CRM", "category": "DB_NAME", "source": "dba", "aliases": ["bfrbnk_crm"]},
+    {"name": "BFRBNK_LOAN", "category": "DB_NAME", "source": "dba", "aliases": ["bfrbnk_loan"]},
+    {"name": "BFRBNK_SWIFT", "category": "DB_NAME", "source": "dba", "aliases": []},
+    {"name": "BFRBNK_AML", "category": "DB_NAME", "source": "dba", "aliases": []},
+
+    {"name": "MUSTERI_BILGI", "category": "TABLE_NAME", "source": "db_metadata", "aliases": []},
+    {"name": "HESAP_HAREKET", "category": "TABLE_NAME", "source": "db_metadata", "aliases": []},
+    {"name": "KREDI_BASVURU", "category": "TABLE_NAME", "source": "db_metadata", "aliases": []},
+    {"name": "KART_ISLEM", "category": "TABLE_NAME", "source": "db_metadata", "aliases": []},
+    {"name": "SWIFT_MSG_LOG", "category": "TABLE_NAME", "source": "db_metadata", "aliases": []},
+    {"name": "AML_ALERT_HIST", "category": "TABLE_NAME", "source": "db_metadata", "aliases": []},
+
+    {"name": "VSP_E1090_PROD", "category": "STORAGE_RESOURCE", "source": "hitachi", "aliases": ["650130"]},
+    {"name": "VSP_E1090_DR", "category": "STORAGE_RESOURCE", "source": "hitachi", "aliases": ["650131"]},
+    {"name": "Pool_Core_SAS", "category": "STORAGE_RESOURCE", "source": "hitachi", "aliases": ["pool-00"]},
+    {"name": "Pool_Archive_NL", "category": "STORAGE_RESOURCE", "source": "hitachi", "aliases": ["pool-01"]},
+    {"name": "HG_ORACLE_RAC", "category": "STORAGE_RESOURCE", "source": "hitachi", "aliases": []},
+    {"name": "HG_VMWARE_PROD", "category": "STORAGE_RESOURCE", "source": "hitachi", "aliases": []},
+    {"name": "LUN_ORA_DATA_01", "category": "STORAGE_RESOURCE", "source": "hitachi", "aliases": ["00:A0:01"]},
+    {"name": "LUN_ORA_REDO_01", "category": "STORAGE_RESOURCE", "source": "hitachi", "aliases": ["00:A0:02"]},
+
+    {"name": "MDS-IST-PROD-01", "category": "NETWORK_RESOURCE", "source": "cisco", "aliases": []},
+    {"name": "MDS-IST-PROD-02", "category": "NETWORK_RESOURCE", "source": "cisco", "aliases": []},
+    {"name": "MDS-DR-PROD-01", "category": "NETWORK_RESOURCE", "source": "cisco", "aliases": []},
+    {"name": "VSAN_PROD_100", "category": "NETWORK_RESOURCE", "source": "cisco", "aliases": ["vsan100"]},
+    {"name": "VSAN_DR_200", "category": "NETWORK_RESOURCE", "source": "cisco", "aliases": ["vsan200"]},
+    {"name": "Zone_OracleRAC_VSP", "category": "NETWORK_RESOURCE", "source": "cisco", "aliases": []},
+
+    {"name": "https://gitlab.bfrbank.local", "category": "INTERNAL_URL", "source": "cmdb", "aliases": []},
+    {"name": "https://jira.bfrbank.local", "category": "INTERNAL_URL", "source": "cmdb", "aliases": []},
+    {"name": "https://grafana.bfrbank.local:3000", "category": "INTERNAL_URL", "source": "cmdb", "aliases": []},
+    {"name": "https://vault.bfrbank.local:8200", "category": "INTERNAL_URL", "source": "cmdb", "aliases": []},
+    {"name": "https://api-gw.bfrbank.com.tr", "category": "INTERNAL_URL", "source": "cmdb", "aliases": []},
+    {"name": "https://kibana.bfrbank.local:5601", "category": "INTERNAL_URL", "source": "cmdb", "aliases": []},
+
+    {"name": "Projekt Yıldız", "category": "PROJECT_NAME", "source": "pmo", "aliases": ["project-yildiz"]},
+    {"name": "Projekt Göçmen", "category": "PROJECT_NAME", "source": "pmo", "aliases": ["project-gocmen", "göçmen projesi"]},
+    {"name": "Atlas Core Banking", "category": "INTERNAL_SERVICE", "source": "cmdb", "aliases": ["atlas-core"]},
+    {"name": "Kale Fraud Detection", "category": "INTERNAL_SERVICE", "source": "cmdb", "aliases": ["kale-fraud"]}
+  ]
+}

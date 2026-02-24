@@ -155,7 +155,50 @@ curl http://localhost:8000/readyz
 # Beklenen: {"status":"ready"}
 ```
 
-### 3. PII maskeleme testi
+### 3. Test verisi yukleme (DynamicLookup)
+
+DynamicLookup scanner'inin calisabilmesi icin dahili varlik isimlerinin (VM, hostname, DB, tablo, storage vb.) sisteme yuklenmesi gerekir. Repo icinde hazir bir seed dosyasi vardir:
+
+**Dosya:** `llm_guard_api/data/seed_assets.json` (54 varlik: VM, hostname, DB, tablo, storage, network, URL, proje, servis)
+
+```bash
+# Seed verisini API uzerinden yukle
+curl -X POST http://localhost:8000/api/v1/masked-assets/bulk \
+  -H "Content-Type: application/json" \
+  -d @llm_guard_api/data/seed_assets.json
+```
+
+Docker icinden kullaniyorsaniz, dosyayi once container'a kopyalayin veya host'tan gonderin:
+
+```bash
+# Host'tan dogrudan gonderin (container disinda)
+curl -X POST http://localhost:8000/api/v1/masked-assets/bulk \
+  -H "Content-Type: application/json" \
+  -d @/path/to/seed_assets.json
+
+# Veya Docker volume ile mount edin
+docker run -d --name llm-guard -p 8000:8000 \
+  -v /opt/llm-guard/data:/home/user/app/data \
+  llm-guard-api:offline
+
+# Container basladiktan sonra seed yukleyin
+curl -X POST http://localhost:8000/api/v1/masked-assets/bulk \
+  -H "Content-Type: application/json" \
+  -d @seed_assets.json
+```
+
+Yukleme sonrasi dogrulama:
+
+```bash
+# Varlik istatistikleri
+curl http://localhost:8000/api/v1/masked-assets/stats
+# Beklenen: {"stats":{"VM_NAME":10,"HOSTNAME":8,"DB_NAME":6,...,"TOTAL":54}}
+
+# Cache yenile (bulk import otomatik yapar ama manuel de yapilabilir)
+curl -X POST http://localhost:8000/api/v1/masked-assets/sync
+```
+
+### 4. PII maskeleme testi
 
 ```bash
 curl -X POST http://localhost:8000/analyze/prompt \
@@ -165,7 +208,32 @@ curl -X POST http://localhost:8000/analyze/prompt \
 
 Beklenen: Kisi adi, email ve telefon numarasi maskelenmis olarak donecek.
 
-### 4. Offline test (network olmadan)
+### 5. DynamicLookup maskeleme testi
+
+Seed verisi yuklendikten sonra:
+
+```bash
+# VM adi + hostname + DB adi + kisi adi maskeleme
+curl -X POST http://localhost:8000/analyze/prompt \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"ISTVMPSQL001 sunucusunda BFRBNK_CORE veritabanina baglanti hatasi var. Ahmet Yilmaz da ayni sorunu yasiyor."}'
+
+# Beklenen: ISTVMPSQL001 -> [REDACTED_VM_NAME_1]
+#           BFRBNK_CORE  -> [REDACTED_DB_NAME_1]
+#           Ahmet Yilmaz -> [PERSON_1] veya benzeri
+```
+
+```bash
+# Alias ile eslestirme testi
+curl -X POST http://localhost:8000/analyze/prompt \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"ist-sql-prod-01 sunucusunda deadlock var. pool-00 storage dolmus."}'
+
+# Beklenen: ist-sql-prod-01 -> [REDACTED_VM_NAME_1] (ISTVMPSQL001 alias'i)
+#           pool-00         -> [REDACTED_STORAGE_RESOURCE_1] (Pool_Core_SAS alias'i)
+```
+
+### 6. Offline test (network olmadan)
 
 ```bash
 docker run --rm --network none -p 8000:8000 llm-guard-api:offline
@@ -173,9 +241,14 @@ docker run --rm --network none -p 8000:8000 llm-guard-api:offline
 curl http://localhost:8000/healthz
 ```
 
-### 5. Web UI
+### 7. Web UI
 
 Tarayicida: `http://<sunucu-ip>:8000/web/`
+
+Web UI uzerinden:
+- **Maskeleme Testi** sekmesinden metin girin ve sonuclari gorun
+- **Varlik Yonetimi** sekmesinden varliklari ekleyin/duzenleyin/silin
+- **Entity Suppression** ile belirli entity tiplerini devre disi birakin
 
 ---
 
